@@ -1,0 +1,138 @@
+@import "tailwindcss";
+:root {
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-200: rgba(37, 99, 235, 0.2);
+  --color-primary-300: rgba(54, 110, 231, 0.376);
+  --color-primary-600: #1d4ed8;
+  --color-primary-contrast: #ffffff;
+
+  --color-success: #10b981; /* emerald-500 */
+  --color-success-200: rgba(16, 185, 129, 0.22);
+  --color-success-contrast: #ffffff;
+
+  --color-danger: #ef4444; /* red-500 */
+  --color-danger-200: rgba(239, 68, 68, 0.24);
+  --color-danger-contrast: #ffffff;
+
+  --color-accent: #8b5cf6; /* violet-500 */
+
+  --color-text: #111827; /* gray-900 */
+  --color-text-muted: #6b7280;
+  --color-bg: #f9fafb;
+  --color-surface: #ffffff;
+  --color-surface-2: #545455ff;
+  --color-border: #545455ff;
+
+  --color-shadow-light: rgba(0, 0, 0, 0.06);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.18);
+  --color-hover: rgba(17, 24, 39, 0.04);
+}
+
+/* Sidebar theme tokens */
+:root {
+  /* light theme sidebar - slightly stronger blue gradient for better visibility */
+  --sidebar-bg: linear-gradient(180deg, #2c4c77, #2c4c77);
+  --sidebar-logo-bg: #e8eef1; /* darker blue for contrast */
+  --sidebar-active-bg: rgba(255, 255, 255, 0.95);
+  --sidebar-active-text: #0b1220; /* dark text on active */
+  --sidebar-tooltip-bg: #ffffff;
+  /* Navbar should follow sidebar theme */
+  --navbar-bg: var(--sidebar-bg);
+  --navbar-logo-bg: var(--sidebar-logo-bg);
+}
+/* navbar-theme.css */
+
+/* navbar-theme.css */
+
+/* 🌗 Default theme (light mode) */
+:root {
+  --navbar-bg: linear-gradient(180deg, #2c4c77, #2c4c77);
+  --navbar-text: #ffffff;
+  --navbar-icon: #ffffff;
+  --navbar-logo-bg: #e8eef1;
+  --navbar-active-bg: rgba(255, 255, 255, 0.95);
+  --navbar-active-text: #0b1220;
+  --navbar-tooltip-bg: #ffffff;
+}
+
+/* 🌙 Dark mode (if your ThemeContext toggles a 'dark' class on body) */
+body.dark {
+  --navbar-bg: linear-gradient(180deg, #1e2d47, #2c4c77);
+  --navbar-text: #e8eef1;
+  --navbar-icon: #e8eef1;
+  --navbar-active-text: #ffffff;
+  --navbar-tooltip-bg: #2c4c77;
+}
+
+/* ========== Dark Theme ========== */
+[data-theme="dark"] {
+  /* Backgrounds & Surfaces */
+  --color-bg: #0b1220; /* slightly deeper than #020617 for smoother gradients */
+  --color-surface: #0f172a; /* card surface */
+  --color-surface-2: #111a2e; /* subtle elevated surface */
+  --color-border: #1f2a44; /* low-contrast border line */
+
+  /* Text & Icons */
+  --color-text: #f1f5f9; /* primary text */
+  --color-text-muted: #94a3b8; /* secondary text */
+  --color-icon: #e5edf7; /* icons slightly softer than pure white */
+
+  /* Brand / Primary */
+  --color-primary: #3b82f6; /* blue-500 */
+  --color-primary-600: #2563eb; /* hover / active for primary */
+  --color-primary-200: rgba(59, 130, 246, 0.22); /* focus ring / soft shadows */
+  --color-primary-contrast: #ffffff; /* text/icon on primary */
+
+  /* Secondary (accent) */
+  --color-secondary: #60a5fa; /* sky-400 */
+  --color-accent: #8b5cf6; /* optional violet accent for highlights */
+
+  /* Semantic – success / info / warning / danger */
+  --color-success: #22c55e; /* emerald-500 */
+  --color-success-600: #16a34a;
+  --color-success-200: rgba(34, 197, 94, 0.22);
+  --color-success-contrast: #03150a;
+
+  --color-info: #06b6d4; /* cyan-500 */
+  --color-info-600: #0891b2;
+  --color-info-200: rgba(6, 182, 212, 0.22);
+  --color-info-contrast: #001217;
+
+  --color-warning: #f59e0b; /* amber-500 */
+  --color-warning-600: #d97706;
+  --color-warning-200: rgba(245, 158, 11, 0.22);
+  --color-warning-contrast: #1a1203;
+
+  /* Use "danger" to match your components; alias "error" -> "danger" */
+  --color-danger: #ef4444; /* red-500 */
+  --color-danger-600: #dc2626;
+  --color-danger-200: rgba(239, 68, 68, 0.24);
+  --color-danger-contrast: #190404;
+
+  /* Back-compat aliases (if anything still references these) */
+  --color-error: var(--color-danger);
+  --color-success-contrastText: var(--color-success-contrast);
+
+  /* Interaction helpers */
+  --color-hover: rgba(241, 245, 249, 0.06); /* light hover veil on dark */
+  --color-shadow-light: rgba(0, 0, 0, 0.3);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.55);
+
+  /* Sidebar tokens for dark theme */
+  --sidebar-bg: linear-gradient(180deg, #071026, #0b1226);
+  --sidebar-logo-bg: #0ea5e9; /* sky-400 */
+  --sidebar-active-bg: #ffffff; /* keep pill white like design */
+  --sidebar-active-text: #000000;
+  --sidebar-tooltip-bg: #ffffff;
+  /* Navbar should follow sidebar theme in dark mode too */
+  --navbar-bg: var(--sidebar-bg);
+  --navbar-logo-bg: var(--sidebar-logo-bg);
+}
+
+/* Base body styles */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
