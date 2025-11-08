@@ -1,7 +1,7 @@
 // src/App.jsx
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import AppRoutes from "./Routes";
 import { ThemeProvider } from "./context/ThemeContext";
 import { CatalogProvider } from "./context/CatalogContext";
 import { ListingProvider } from "./context/ListingContext";
@@ -12,6 +12,7 @@ import { AsinProvider } from "./context/AsinContext";
 import { ThemeToaster } from "./components/Ui/ThemeToaster";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
 import JobConfigProvider from "./context/jobConfigContext";
+import AppRoutes from "./routes/Index";
 
 export default function App() {
   return (

@@ -1,3 +1,4 @@
+import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -12,6 +13,7 @@ import Profile from "../pages/Profile/Profile";
 import ListingReport from "../pages/ListingReport/ListingReport";
 import ListingDetail from "../pages/Listing/Detail/listingDetail";
 import JobConfig from "../layout/jobConfig";
+import ComingSoon from "../pages/ComingSoon/ComingSoon";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -25,7 +27,6 @@ export default function AppRoutes() {
       {!user && (
         <>
           <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </>
       )}
@@ -37,7 +38,7 @@ export default function AppRoutes() {
             path="/listingReport"
             element={
               <MainLayout>
-                <ListingReport />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -45,7 +46,7 @@ export default function AppRoutes() {
             path="/listing/:asin"
             element={
               <MainLayout>
-                <ListingDetail />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -53,7 +54,7 @@ export default function AppRoutes() {
             path="/listing"
             element={
               <MainLayout>
-                <Listing />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -61,7 +62,7 @@ export default function AppRoutes() {
             path="/profile"
             element={
               <MainLayout>
-                <Profile />
+                <ComingSoon />
               </MainLayout>
             }
           />{" "}
@@ -69,7 +70,7 @@ export default function AppRoutes() {
             path="/users"
             element={
               <MainLayout>
-                <Users />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -92,7 +93,7 @@ export default function AppRoutes() {
             path="/listingReport"
             element={
               <MainLayout>
-                <ListingReport />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -100,7 +101,7 @@ export default function AppRoutes() {
             path="/listing/:asin"
             element={
               <MainLayout>
-                <ListingDetail />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -108,7 +109,7 @@ export default function AppRoutes() {
             path="/users"
             element={
               <MainLayout>
-                <Users />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -116,7 +117,7 @@ export default function AppRoutes() {
             path="/job-config"
             element={
               <MainLayout>
-                <JobConfig />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -124,7 +125,7 @@ export default function AppRoutes() {
             path="/listing"
             element={
               <MainLayout>
-                <Listing />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -132,7 +133,7 @@ export default function AppRoutes() {
             path="/profile"
             element={
               <MainLayout>
-                <Profile />
+                <ComingSoon />
               </MainLayout>
             }
           />
