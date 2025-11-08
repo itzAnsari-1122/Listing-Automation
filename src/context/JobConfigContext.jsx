@@ -3,7 +3,7 @@ import {
   jobConfigGetCallApi,
   jobConfigUpdateCallApi,
 } from "../helpers/BackendHelper";
-import { themeToast } from "../components/ui/ThemeToaster";
+import { themeToast } from "../components/Ui/ThemeToaster";
 
 const JobConfigContext = createContext();
 export const useJobConfig = () => useContext(JobConfigContext);
@@ -125,7 +125,7 @@ export const COUNTRIES_BY_REGION = JobConfigCountryOptions.reduce(
     acc[country.regionType].push(country);
     return acc;
   },
-  {}
+  {},
 );
 
 export const JobConfigProvider = ({ children }) => {
@@ -142,7 +142,7 @@ export const JobConfigProvider = ({ children }) => {
     } catch (error) {
       console.error("❌ Get job config failed:", error);
       themeToast.error(
-        error?.response?.data?.message || "Failed to fetch job configuration."
+        error?.response?.data?.message || "Failed to fetch job configuration.",
       );
       throw error;
     } finally {
@@ -174,7 +174,7 @@ export const JobConfigProvider = ({ children }) => {
     } catch (error) {
       console.error("❌ Update job config failed:", error);
       themeToast.error(
-        error?.response?.data?.message || "Failed to update job configuration."
+        error?.response?.data?.message || "Failed to update job configuration.",
       );
       throw error;
     } finally {

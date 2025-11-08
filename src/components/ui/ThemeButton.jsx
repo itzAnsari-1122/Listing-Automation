@@ -20,14 +20,14 @@ const ThemeButton = forwardRef(function ThemeButton(
     onClick,
     ...muiProps
   },
-  ref
+  ref,
 ) {
   const muiVariant =
     variant === "outline"
       ? "outlined"
       : variant === "text"
-      ? "text"
-      : "contained";
+        ? "text"
+        : "contained";
 
   const toneMap = useMemo(() => {
     const map = {

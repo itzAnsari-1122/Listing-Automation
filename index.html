@@ -2,10 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/src/assets/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title><{VITE_WEBSITE_NAME}></title>
+    <meta name="description" content="<{VITE_WEBSITE_DESCRIPTION}>" />
+    <meta name="keywords" content="<{VITE_WEBSITE_KEYWORDS}>" />
+    <meta name="author" content="<{VITE_WEBSITE_AUTHOR}>" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HealthAndBeautyBusiness",
+        "image": [
+          "https://picsum.photos/id/1013/200/200",
+          "https://picsum.photos/id/1013/800/600",
+          "https://picsum.photos/id/1013/1920/1080"
+        ],
+        "name": "<{VITE_WEBSITE_NAME}>",
+        "title": "<{VITE_WEBSITE_NAME}>",
+        "description": "<{VITE_WEBSITE_DESCRIPTION}>",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "<{VITE_ADDRESS_STREET}>",
+          "addressLocality": "<{VITE_ADDRESS_CITY}>",
+          "addressRegion": "<{VITE_ADDRESS_REGION}>",
+          "postalCode": "<{VITE_ADDRESS_ZIP}>",
+          "addressCountry": "<{VITE_ADDRESS_COUNTRY}>"
+        },
+        "review": {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "author": {
+            "@type": "Company",
+            "name": "<{VITE_WEBSITE_AUTHOR}>"
+          }
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": {latitude},
+          "longitude": {longitude}
+        },
+        "brand": {brands},
+        "url": "{url}",
+        "telephone": "<{VITE_PHONE}>",
+        "paymentAccepted": "{paymentAccepted}",
+        "currenciesAccepted": "{currenciesAccepted}",
+        "priceRange": "{priceRange}",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "{dayOfWeek}",
+            "opens": "{opens}",
+            "closes": "{closes}"
+          }
+        ],
+        "acceptsReservations": "{acceptsReservations}"
+      }
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

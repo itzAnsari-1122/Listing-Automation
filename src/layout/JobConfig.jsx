@@ -9,14 +9,13 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-
-import { PiUserSwitch } from "react-icons/pi";
-import ThemeSelectField from "../components/ui/ThemeSelectField";
 import {
+  useJobConfig,
   COUNTRIES_BY_REGION,
   REGION_TYPES,
-  useJobConfig,
-} from "../context/JobConfigContext";
+} from "../context/jobConfigContext";
+import ThemeSelectField from "../components/Ui/ThemeSelectField";
+import { PiUserSwitch } from "react-icons/pi";
 
 const JobConfig = () => {
   const {
@@ -57,7 +56,7 @@ const JobConfig = () => {
 
       const regionSetup = REGION_TYPES.map((regionType) => {
         const backendRegion = config?.searchRegionType?.find(
-          (r) => r.regionType === regionType
+          (r) => r.regionType === regionType,
         );
         const availableMarketplaces = COUNTRIES_BY_REGION[regionType] || [];
         const selectedMarketplaces = backendRegion?.marketPlaceIds || [];
@@ -146,7 +145,7 @@ const JobConfig = () => {
           return updatedItem;
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -404,16 +403,16 @@ const JobConfig = () => {
                       sw.color === "success"
                         ? "var(--color-success)"
                         : sw.color === "error"
-                        ? "var(--color-danger)"
-                        : "var(--color-primary)",
+                          ? "var(--color-danger)"
+                          : "var(--color-primary)",
                   },
                   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
                     backgroundColor:
                       sw.color === "success"
                         ? "var(--color-success)"
                         : sw.color === "error"
-                        ? "var(--color-danger)"
-                        : "var(--color-primary)",
+                          ? "var(--color-danger)"
+                          : "var(--color-primary)",
                   },
                 }}
               />

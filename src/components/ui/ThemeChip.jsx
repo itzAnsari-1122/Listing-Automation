@@ -20,7 +20,7 @@ const ThemeChip = forwardRef(function ThemeChip(
     onDelete,
     ...muiProps
   },
-  ref
+  ref,
 ) {
   const muiVariant = variant === "outline" ? "outlined" : "filled";
   const isDisabled = Boolean(disabled || loading || muiProps.disabled);

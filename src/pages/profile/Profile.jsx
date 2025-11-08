@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { FaCamera } from "react-icons/fa";
+import Chip from "@mui/material/Chip";
+import ThemeChip from "../../components/Ui/ThemeChip";
 
 function Profile() {
   const { user } = useAuth();
+  const fileInputRef = useRef(null);
   const [profilePic, setProfilePic] = useState("");
 
   useEffect(() => {

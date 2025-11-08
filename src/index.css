@@ -1,4 +1,9 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== Light (default) ========== */
+
 :root {
   --color-primary: #2563eb; /* blue-600 */
   --color-primary-200: rgba(37, 99, 235, 0.2);

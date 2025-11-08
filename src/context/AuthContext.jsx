@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   loginCallApi,
   getProfileCallApi,
@@ -9,20 +8,20 @@ import {
   deleteAccountCallApi,
   changePasswordCallApi,
 } from "../helpers/BackendHelper";
-import { themeToast } from "../components/ui/ThemeToaster";
-import ThemeLoader from "../components/ui/ThemeLoader";
-
+import { useNavigate } from "react-router-dom";
+import ThemeLoader from "../components/Ui/ThemeLoader";
+import { themeToast } from "../components/Ui/ThemeToaster";
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [allUsers, setAllUsers] = useState(null);
   const [allUsersLoading, setAllUsersLoading] = useState(false);
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
-  const [userLoading, setUserLoading] = useState(false);
-  const [initializing, setInitializing] = useState(true);
 
   const navigate = useNavigate();
 
@@ -31,18 +30,18 @@ export const AuthProvider = ({ children }) => {
     try {
       setRefreshLoading(true);
       const { data, token } = await loginCallApi(credentials);
-      if (token) localStorage.setItem("token", token);
       setUser(data);
+      if (token) localStorage.setItem("token", token);
       themeToast.success("Login successful!");
-      navigate("/dashboard");
       return { data, token };
     } catch (error) {
+      console.error("Login failed", error);
       themeToast.error(error?.response?.data?.message || "Login failed");
-      throw error;
     } finally {
       setRefreshLoading(false);
     }
   };
+
   // ✅ PROFILE
   const getProfileService = async () => {
     try {
@@ -54,13 +53,14 @@ export const AuthProvider = ({ children }) => {
       console.error("Get profile failed", error);
       themeToast.error(
         error?.response?.data?.message ||
-          "Session expired. Please log in again."
+          "Session expired. Please log in again.",
       );
       logout();
     } finally {
       setUserLoading(false);
     }
   };
+
   // ✅ USERS
   const allUsersService = async (payload) => {
     try {
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Get all users failed", error);
       themeToast.error(
-        error?.response?.data?.message || "Failed to fetch users"
+        error?.response?.data?.message || "Failed to fetch users",
       );
     } finally {
       setAllUsersLoading(false);
@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Edit profile failed", error);
       themeToast.error(
-        error?.response?.data?.message || "Failed to update profile"
+        error?.response?.data?.message || "Failed to update profile",
       );
     } finally {
       setUserLoading(false);
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Change password failed", error);
       themeToast.error(
-        error?.response?.data?.message || "Change password failed"
+        error?.response?.data?.message || "Change password failed",
       );
     } finally {
       setChangePasswordLoading(false);
@@ -149,7 +149,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Failed to delete account", error);
       themeToast.error(
-        error?.response?.data?.message || "Failed to delete account"
+        error?.response?.data?.message || "Failed to delete account",
       );
     } finally {
       setUserLoading(false);
@@ -163,6 +163,7 @@ export const AuthProvider = ({ children }) => {
     themeToast.info("Logged out");
     navigate("/auth/login", { replace: true });
   };
+
   // ✅ INIT
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -178,6 +179,7 @@ export const AuthProvider = ({ children }) => {
   if (initializing) {
     return <ThemeLoader type="fullpage" message="Loading..." />;
   }
+
   return (
     <AuthContext.Provider
       value={{

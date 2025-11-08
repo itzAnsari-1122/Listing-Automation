@@ -27,13 +27,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import ThemeChip from "../components/ui/ThemeChip";
+import ThemeButton from "../components/Ui/ThemeButton";
+import ThemeChip from "../components/Ui/ThemeChip";
 import { useNavigate } from "react-router-dom";
-import ThemeButton from "../components/ui/ThemeButton";
-import ThemeLoader from "../components/ui/ThemeLoader";
-import ThemeSelectField from "../components/ui/ThemeSelectField";
-import { CountryOptions } from "../utils";
 import { useNotification } from "../context/NotificationContext";
+import ThemeSelectField from "../components/Ui/ThemeSelectField";
+import { CountryOptions } from "../utils";
+import ThemeLoader from "../components/Ui/ThemeLoader";
 
 const timeAgo = (date) => {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -70,10 +70,10 @@ const typeColor = (t) =>
   t === "success"
     ? "#16A34A"
     : t === "warning"
-    ? "#F59E0B"
-    : t === "error"
-    ? "#DC2626"
-    : "#3B82F6";
+      ? "#F59E0B"
+      : t === "error"
+        ? "#DC2626"
+        : "#3B82F6";
 
 export default function NotificationSidebar({
   sidebarVisible,
@@ -117,7 +117,7 @@ export default function NotificationSidebar({
   useEffect(() => {
     const id = setTimeout(
       () => setDebouncedQuery(query.trim().toLowerCase()),
-      250
+      250,
     );
     return () => clearTimeout(id);
   }, [query]);
@@ -170,7 +170,7 @@ export default function NotificationSidebar({
         }, 1000);
       }
     },
-    [isLoadingMore, state.loading, state.hasMore, pageSize, setPageSize]
+    [isLoadingMore, state.loading, state.hasMore, pageSize, setPageSize],
   );
 
   const handleNotificationClick = async (n) => {
@@ -201,7 +201,7 @@ export default function NotificationSidebar({
       typeFilter,
       statusFilter,
       true,
-      selectedCountries
+      selectedCountries,
     )
       .catch(() => {})
       .finally(() => setLastRefreshedAt(Date.now()));
@@ -214,7 +214,7 @@ export default function NotificationSidebar({
     if (readCount <= 0) return;
 
     const ok = window.confirm(
-      `Delete ${readCount} read notification${readCount > 1 ? "s" : ""}?`
+      `Delete ${readCount} read notification${readCount > 1 ? "s" : ""}?`,
     );
     if (!ok) return;
 
@@ -225,7 +225,7 @@ export default function NotificationSidebar({
         typeFilter,
         statusFilter,
         true,
-        selectedCountries
+        selectedCountries,
       );
     } catch (err) {
       console.error("Failed to delete read notifications:", err);
@@ -238,7 +238,7 @@ export default function NotificationSidebar({
     if ((totalNotifications || 0) === 0) return;
 
     const ok = window.confirm(
-      "This will permanently delete ALL notifications. Continue?"
+      "This will permanently delete ALL notifications. Continue?",
     );
     if (!ok) return;
 
@@ -249,7 +249,7 @@ export default function NotificationSidebar({
         typeFilter,
         statusFilter,
         true,
-        selectedCountries
+        selectedCountries,
       );
     } catch (err) {
       console.error("Failed to delete all notifications:", err);
@@ -298,7 +298,7 @@ export default function NotificationSidebar({
     arr = [...arr].sort((a, b) =>
       sortOrder === "desc"
         ? new Date(b.createdAt) - new Date(a.createdAt)
-        : new Date(a.createdAt) - new Date(b.createdAt)
+        : new Date(a.createdAt) - new Date(b.createdAt),
     );
 
     return arr;
@@ -482,7 +482,7 @@ export default function NotificationSidebar({
             onChange={(values, payload) => {
               setSelectedCountries(values);
               const marketplaceIds = payload.map(
-                (p) => p.marketplaceId || p.value
+                (p) => p.marketplaceId || p.value,
               );
               console.log("Selected marketplace IDs:", marketplaceIds);
             }}
@@ -584,12 +584,12 @@ export default function NotificationSidebar({
                 type === "all"
                   ? "primary"
                   : type === "success"
-                  ? "success"
-                  : type === "error"
-                  ? "danger"
-                  : type === "info"
-                  ? "primary"
-                  : "neutral";
+                    ? "success"
+                    : type === "error"
+                      ? "danger"
+                      : type === "info"
+                        ? "primary"
+                        : "neutral";
               return (
                 <ThemeChip
                   key={type}

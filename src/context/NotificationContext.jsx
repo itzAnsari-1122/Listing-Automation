@@ -291,7 +291,7 @@ export const NotificationProvider = ({ children }) => {
       const res = await UnreadNotificationsCAllApi();
       setUnReadNotifications(res.data || []);
     } catch (error) {
-      console?.error("Error fetching unread notifications:", error);
+      console.error("Error fetching unread notifications:", error);
     }
   };
 

@@ -33,13 +33,13 @@ export default function Navbar({ sidebarOpen, setSidebarVisible }) {
         dateStyle: "medium",
         timeStyle: "short",
       }),
-    []
+    [],
   );
 
   const latestUnread = useMemo(
     () =>
       Array.isArray(unReadNotification) ? unReadNotification.slice(0, 3) : [],
-    [unReadNotification]
+    [unReadNotification],
   );
 
   const handleBellClick = (e) => {
@@ -61,7 +61,7 @@ export default function Navbar({ sidebarOpen, setSidebarVisible }) {
     }
 
     navigate(
-      `/listing/${notification?.asin}?id=${notification?.marketplaceId}`
+      `/listing/${notification?.asin}?id=${notification?.marketplaceId}`,
     );
   };
 
@@ -102,9 +102,9 @@ export default function Navbar({ sidebarOpen, setSidebarVisible }) {
         position="fixed"
         color="default"
         elevation={1}
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-16"
-        } ${hidden ? "-translate-y-full" : "translate-y-0"}`}
+        className={`transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-16"} ${
+          hidden ? "-translate-y-full" : "translate-y-0"
+        }`}
         sx={{
           background: "var(--navbar-bg)",
           color: "var(--navbar-text)",

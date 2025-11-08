@@ -20,7 +20,6 @@ import {
   FiRefreshCw,
 } from "react-icons/fi";
 import { Box } from "@mui/material";
-import ThemeChip from "../../components/Ui/ThemeChip";
 
 const Listing = () => {
   const {
@@ -33,7 +32,7 @@ const Listing = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(listing?.currentPage || 1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(listing?.count || 10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [syncing, setSyncing] = useState(false);
@@ -46,6 +45,7 @@ const Listing = () => {
     useState(false);
   const [showAddAsinModal, setShowAddAsinModal] = useState(false);
 
+  // 🔸 Debounce search
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -54,6 +54,7 @@ const Listing = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
+  // 🔸 Fetch listing
   useEffect(() => {
     const countryCodes = selectedCountries
       .map((v) => CountryOptions.find((o) => o.value === v)?.code)
@@ -62,13 +63,14 @@ const Listing = () => {
       page,
       limit: rowsPerPage,
       search: debouncedSearch,
-      countryCodes: selectedCountries,
+      countryCodes,
       status: selectedStatus === "all" ? null : selectedStatus,
       startDate: "2020-01-01 00:00:00",
       endDate: "2026-12-01 23:59:59",
     });
   }, [page, rowsPerPage, debouncedSearch, selectedCountries, selectedStatus]);
 
+  // 🔸 Format listing data
   const tableData = useMemo(() => {
     if (!listing?.data) return [];
 
@@ -77,73 +79,122 @@ const Listing = () => {
     const asNumber = (v) => (v === null || v === undefined ? null : Number(v));
 
     return listing.data.map((item) => {
-      // ✅ Pull out Amazon product data from the nested `data` object
-      const productData = item.data || {};
+      const product = getFirst(item.items) || {};
+      const summary = getFirst(item.summaries) || {};
+      const attributes = getFirst(item.attributes) || {};
+      const attrsRaw = item.attributesRaw || {};
+      const normalized = item.normalized || {};
 
-      const {
-        attributes = {},
-        identifiers = [],
-        images = [],
-        productTypes = [],
-        salesRanks = [],
-        summaries = [],
-      } = productData;
-
-      const summary = getFirst(summaries) || {};
-      const attrsRaw = attributes || {};
-      const raw = productData || {};
-
-      // ✅ Image handling
+      // Image prioritization: images -> imagesByMarketplace -> summary image -> placeholder
+      const imageFromImages = getFirst(item.images)?.link;
+      const imageFromByMarketplace = getFirst(
+        getFirst(item.imagesByMarketplace || [])?.images,
+      )?.link;
+      const imageFromSummary =
+        summary.mainImage?.link || getFirst(summary.images || [])?.link;
       const image =
-        summary.mainImage?.link ||
-        getFirst(getFirst(images)?.images)?.link ||
-        getFirst(images)?.link ||
+        imageFromImages ||
+        imageFromByMarketplace ||
+        imageFromSummary ||
+        normalized.mainImage ||
         "https://via.placeholder.com/80x80?text=No+Image";
 
-      // ✅ Title handling
+      // Title/brand/price fallback chain
       const title =
         summary.itemName ||
+        normalized.itemName ||
         attrsRaw.item_name?.[0]?.value ||
+        attributes.item_name?.[0]?.value ||
+        attrsRaw.itemName ||
         "No title available";
 
-      // ✅ Brand
       const brand =
-        attrsRaw.brand?.[0]?.value || summary.brand || "Unknown Brand";
+        attributes.brand?.[0]?.value ||
+        attrsRaw.brand?.[0]?.value ||
+        summary.brand ||
+        normalized.brand ||
+        "Unknown Brand";
 
-      // ✅ Price
-      const price = attrsRaw.list_price?.[0]?.value || "N/A";
+      const price =
+        // product offers
+        product?.offers?.[0]?.price?.amount ||
+        // normalized listPrice
+        (normalized.listPrice && normalized.listPrice.value) ||
+        // attributes/list_price
+        attrsRaw.list_price?.[0]?.value ||
+        attributes.list_price?.[0]?.value ||
+        "N/A";
 
-      // ✅ Identifiers (UPC / EAN)
-      const externals = attrsRaw.externally_assigned_product_identifier || [];
-      const upc = externals.find((p) => p.type === "upc")?.value || null;
-      const ean = externals.find((p) => p.type === "ean")?.value || null;
-
-      // ✅ Dimensions & Weight
-      const pkgDims = attrsRaw.item_package_dimensions?.[0] || null;
-      const pkgWeight = attrsRaw.item_package_weight?.[0] || null;
-
-      // ✅ Color, Size, Items count
-      const colors = (attrsRaw.color?.[0]?.value || "")
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      const size = attrsRaw.size?.[0]?.value || summary.size || null;
-
-      const numberOfItems =
-        attrsRaw.number_of_items?.[0]?.value ||
-        attrsRaw.unit_count?.[0]?.value ||
+      // identifiers
+      const upc =
+        normalized.upc ||
+        attrsRaw.externally_assigned_product_identifier?.find(
+          (p) => p.type === "upc",
+        )?.value ||
+        attrsRaw.externally_assigned_product_identifier?.[0]?.value ||
+        null;
+      const ean =
+        normalized.ean ||
+        attrsRaw.externally_assigned_product_identifier?.find(
+          (p) => p.type === "ean",
+        )?.value ||
+        attrsRaw.externally_assigned_product_identifier?.[0]?.value ||
         null;
 
-      // ✅ Return clean flattened object for the table
+      // dims & weights
+      const pkgDims =
+        normalized.itemPackageDimensions ||
+        attrsRaw.item_package_dimensions?.[0] ||
+        null;
+      const pkgWeight =
+        normalized.itemPackageWeight ||
+        attrsRaw.item_package_weight?.[0] ||
+        null;
+
+      // simple arrays for color, scent, etc.
+      const colors =
+        (normalized.color && typeof normalized.color === "string"
+          ? normalized.color.split(",").map((s) => s.trim())
+          : normalized.color) ||
+        (attrsRaw.color?.[0]?.value || attributes.color?.[0]?.value || "")
+          .split?.(",")
+          .map((s) => s.trim())
+          .filter(Boolean) ||
+        [];
+
+      const scents =
+        normalized.scent ||
+        attrsRaw.scent?.map((s) => s.value) ||
+        attributes.scent?.map((s) => s.value) ||
+        [];
+
+      const size =
+        normalized.size ||
+        attrsRaw.size?.[0]?.value ||
+        attributes.size?.[0]?.value ||
+        summary.size ||
+        null;
+
+      const numberOfItems =
+        normalized.numberOfItems ||
+        attrsRaw.number_of_items?.[0]?.value ||
+        attributes.number_of_items?.[0]?.value ||
+        attrsRaw.unit_count?.[0]?.value ||
+        attributes.unit_count?.[0]?.value ||
+        null;
+
+      const productTypes =
+        item.productTypes || item.rawResponse?.productTypes || [];
+      const salesRanks = item.salesRanks || item.rawResponse?.salesRanks || [];
+
       return {
+        // minimal fields used by table + richer extras
         id: item._id,
         asin: item.asin,
         marketplaceId: item.marketplaceId,
-        marketplaceCode: item.marketplaceCode || summary.marketplaceId || "N/A",
+        marketplaceCode: item.marketplaceCode || item.marketplaceCode,
         marketplaceName:
-          item.marketplaceName || summary.websiteDisplayGroupName || "N/A",
-
+          item.marketplaceName || summary.websiteDisplayGroupName || null,
         image,
         title,
         brand,
@@ -151,29 +202,40 @@ const Listing = () => {
         country: item.marketplaceCode || "N/A",
         status: item.status || "Unknown",
         notesMessage: item.notesMessage || null,
+        // metadata
         createdAt: item.createdAt || item.storedAt || null,
         updatedAt: item.updatedAt || null,
         storedAt: item.storedAt || null,
-
+        // identifiers
         upc,
         ean,
-        identifiers,
+        identifiers: item.identifiers || item.identifiersByMarketplace || [],
+        // package & size
         size,
         color: colors,
+        scents,
         numberOfItems: asNumber(numberOfItems),
         itemPackageDimensions: pkgDims,
         itemPackageWeight: pkgWeight,
-        itemDimensions: attrsRaw.item_dimensions?.[0] || null,
+        itemDimensions:
+          attrsRaw.item_dimensions?.[0] ||
+          attributes.item_dimensions?.[0] ||
+          normalized.itemDimensions ||
+          null,
+        // product info
         productTypes,
         salesRanks,
         summary,
-        rawResponse: raw,
+        normalized,
+        rawResponse: item.rawResponse || {},
         attributesRaw: attrsRaw,
         violations: item.violations || [],
+        product: product, // raw product object if needed for deep-dive
       };
     });
   }, [listing]);
 
+  // 🔸 Table columns
   const columns = [
     {
       id: "image",
@@ -213,11 +275,15 @@ const Listing = () => {
       label: "Brand",
       minWidth: 120,
       render: (row) => (
-        <ThemeChip
+        <Chip
           label={row.brand || "N/A"}
-          size="sm"
-          tone="neutral"
-          variant="outlined"
+          size="small"
+          sx={{
+            fontWeight: 500,
+            backgroundColor: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+            color: "var(--color-text)",
+          }}
         />
       ),
     },
@@ -236,11 +302,14 @@ const Listing = () => {
       label: "Country",
       minWidth: 100,
       render: (row) => (
-        <ThemeChip
+        <Chip
           label={row.country}
-          tone="primary"
-          variant="filled"
-          size="sm"
+          size="small"
+          sx={{
+            fontWeight: 600,
+            backgroundColor: "rgba(33, 150, 243, 0.15)",
+            color: "#1976d2",
+          }}
         />
       ),
     },
@@ -250,18 +319,26 @@ const Listing = () => {
       minWidth: 100,
       render: (row) => {
         const status = row.status?.toLowerCase();
-        const tone =
-          status === "fine"
-            ? "success"
-            : status === "danger"
-              ? "danger"
-              : "neutral";
         return (
-          <ThemeChip
-            label={row.status || "Unknown"}
-            tone={tone}
-            variant="filled"
-            size="sm"
+          <Chip
+            label={row.status}
+            size="small"
+            sx={{
+              fontWeight: 600,
+              textTransform: "capitalize",
+              backgroundColor:
+                status === "fine"
+                  ? "rgba(76, 175, 80, 0.15)"
+                  : status === "danger"
+                    ? "rgba(244, 67, 54, 0.15)"
+                    : "rgba(158, 158, 158, 0.15)",
+              color:
+                status === "fine"
+                  ? "#4CAF50"
+                  : status === "danger"
+                    ? "#F44336"
+                    : "#757575",
+            }}
           />
         );
       },
@@ -273,18 +350,29 @@ const Listing = () => {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <ThemeButton
-            size="sm"
-            tone={row.status?.toLowerCase() === "danger" ? "danger" : "primary"}
             variant="contained"
+            textColor="#fff"
+            size="sm"
             onClick={() => {
               if (row?.asin && row?.marketplaceId) {
                 navigate(`/listing/${row.asin}?id=${row.marketplaceId}`);
               } else {
                 console.warn(
-                  "Missing asin or marketplaceId for navigation:",
+                  "Missing asin or marketplaceId for navigation: ",
                   row,
                 );
               }
+            }}
+            sx={{
+              minWidth: 90,
+              fontSize: "0.8rem",
+              backgroundColor:
+                row.status?.toLowerCase() === "danger"
+                  ? "var(--color-error)"
+                  : "var(--color-primary)",
+              "&:hover": {
+                opacity: 0.9,
+              },
             }}
           >
             Action
@@ -302,6 +390,7 @@ const Listing = () => {
     : "Not Synced";
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Header */}
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
@@ -322,7 +411,7 @@ const Listing = () => {
             aria-label="Restricted Word"
           >
             <Upload className="h-4 w-4" />
-            <span style={{ marginLeft: "10px" }}> Restricted Word </span>
+            <span style={{ marginLeft: "10px" }}> ASIN Upload</span>
           </ThemeButton>
           <ThemeButton
             buttonType="button"
@@ -332,12 +421,14 @@ const Listing = () => {
             aria-label="ASIN"
           >
             <Upload className="h-4 w-4" />
-            <span style={{ marginLeft: "10px" }}> ASIN</span>
+            <span style={{ marginLeft: "10px" }}> ASIN Upload</span>
           </ThemeButton>
         </Box>
       </div>
 
+      {/* Summary Cards */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        {/* Total Products */}
         <div
           className="flex items-center gap-4 rounded-lg p-5 shadow-sm transition hover:shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
@@ -359,6 +450,7 @@ const Listing = () => {
           </div>
         </div>
 
+        {/* Corrupted Products */}
         <div
           className="flex items-center gap-4 rounded-lg p-5 shadow-sm transition hover:shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
@@ -383,6 +475,7 @@ const Listing = () => {
           </div>
         </div>
 
+        {/* Last Sync */}
         <div
           className="flex items-center justify-between rounded-lg p-5 shadow-sm transition hover:shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
@@ -444,6 +537,7 @@ const Listing = () => {
         </div>
       </div>
 
+      {/* Search + Filters */}
       <div
         className="overflow-hidden rounded-lg shadow"
         style={{ backgroundColor: "var(--color-surface)" }}
@@ -484,9 +578,10 @@ const Listing = () => {
               multiple
               value={selectedCountries}
               onChange={(values, payload) => {
-                setSelectedCountries(values);
+                setSelectedCountries(values); // ← updates selected marketplaces (array of `value`s)
 
                 const codes = payload.map((p) => p.code);
+                // if you need ISO country codes for something else:
                 console.log("Selected market IDs:", values);
                 console.log("Selected country codes:", codes);
               }}
@@ -511,6 +606,7 @@ const Listing = () => {
           </div>
         </div>
 
+        {/* Table */}
         <div
           className="overflow-x-auto"
           style={{
@@ -526,14 +622,15 @@ const Listing = () => {
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
-            onRowsPerPageChange={(value) => {
-              setRowsPerPage(value);
-            }}
+            onRowsPerPageChange={(e) =>
+              setRowsPerPage(parseInt(e.target.value))
+            }
             loading={listingLoading}
           />
         </div>
       </div>
 
+      {/* 🔸 Independent Modals */}
       {showAsinModal && (
         <AsinModal
           open={showAsinModal}
@@ -548,19 +645,18 @@ const Listing = () => {
           onClose={() => setShowAddAsinModal(false)}
         />
       )}
-      {/* 🔹 Restricted Words */}
-      {showRestrictedModal && (
+      {showAsinModal && (
         <RestrictedWordModal
           open={showRestrictedModal}
-          onClose={() => setShowRestrictedWordModal(false)}
+          onClose={() => setShowAsinModal(false)}
           onAddClick={() => setShowAddRestrictedWordModal(true)}
         />
       )}
 
-      {showAddRestrictedModal && (
+      {showAddAsinModal && (
         <AddRestrictedWordModal
           open={showAddRestrictedModal}
-          onClose={() => setShowAddRestrictedWordModal(false)}
+          onClose={() => setShowAddAsinModal(false)}
         />
       )}
     </div>

@@ -19,10 +19,11 @@ export default function ThemeSelectField({
   control,
   rules = {},
   disabled = false,
-
+  readOnly = false,
   width = "250px",
   borderRadius,
   countriesFlags = false,
+  ...rest
 }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -50,7 +51,7 @@ export default function ThemeSelectField({
           ? sv.filter((v) => v !== optionValue)
           : [...sv, optionValue];
         const newPayload = newValues.map((v) =>
-          options.find((o) => o.value === v)
+          options.find((o) => o.value === v),
         );
         (fieldProps.onChange || onChange)?.(newValues, newPayload);
       } else {
@@ -79,8 +80,8 @@ export default function ThemeSelectField({
       ? options
           .filter((opt) =>
             (Array.isArray(selectedValue) ? selectedValue : []).includes(
-              opt.value
-            )
+              opt.value,
+            ),
           )
           .map((opt) => opt.label)
           .join(", ")
@@ -97,9 +98,7 @@ export default function ThemeSelectField({
         <div
           className={`flex w-full cursor-pointer items-center justify-between overflow-hidden border px-3 py-2 transition-all duration-150
             ${disabled ? "cursor-not-allowed opacity-60" : ""}
-            ${
-              borderRadius ? "" : "rounded-lg"
-            } // Only apply if no custom borderRadius rounded-lg
+            ${borderRadius ? "" : "rounded-lg"} // Only apply if no custom borderRadius rounded-lg
           `}
           style={{
             backgroundColor: "var(--color-surface)",
@@ -187,9 +186,7 @@ export default function ThemeSelectField({
           )}
 
           <ChevronDown
-            className={`ml-2 h-4 w-4 transition-transform ${
-              open ? "rotate-180" : ""
-            }`}
+            className={`ml-2 h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
             style={{ color: "var(--color-icon)" }}
           />
         </div>

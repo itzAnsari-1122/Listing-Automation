@@ -1,4 +1,3 @@
-
 // colorMap.js
 import { FiCheckCircle, FiAlertCircle, FiInfo } from "react-icons/fi";
 

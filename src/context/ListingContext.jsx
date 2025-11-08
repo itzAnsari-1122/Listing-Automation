@@ -1,0 +1,118 @@
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  loginCallApi,
+  getProfileCallApi,
+  editProfileCallApi,
+  registerCallApi,
+  usersCallApi,
+  NotificationCallApi,
+  ListingCallApi,
+  ListingFlaggedCallApi,
+  ListingDetailCallApi,
+  ListingSyncCallApi,
+  EditListingCallApi,
+} from "../helpers/BackendHelper";
+import { useNavigate } from "react-router-dom";
+
+const ListingContext = createContext();
+export const useListing = () => useContext(ListingContext);
+
+export const ListingProvider = ({ children }) => {
+  const [listingLoading, setListingLoading] = useState(false);
+  const [listingFlaggedLoading, setListingFlaggedLoading] = useState(false);
+  const [listingFlagged, setListingFlagged] = useState(null);
+  const [listingDetailLoading, setListingDetailLoading] = useState(false);
+  const [listingDetail, setListingDetail] = useState(null);
+  const [listing, setListing] = useState(null);
+  const [listingSyncLoading, setListingSyncLoading] = useState(false);
+
+  const ListingService = async (payload) => {
+    try {
+      setListingLoading(true);
+      const data = await ListingCallApi(payload);
+      setListing(data);
+      console.log("✅ Listing Service Data from Context:", data);
+      return data;
+    } catch (error) {
+      console.error("Listing Service failed", error);
+      themeToast.error(
+        error?.response?.data?.message || "Failed to fetch listing",
+      );
+      throw error;
+    } finally {
+      setListingLoading(false);
+    }
+  };
+  const EditListingService = async (asin, payload, marketplaceIds) => {
+    try {
+      setListingLoading(true);
+      const response = await EditListingCallApi(asin, payload, marketplaceIds);
+      console.log("✅ Listing Edited:", response);
+      return response;
+    } catch (error) {
+      console.error("❌ Edit Listing failed:", error);
+      throw error;
+    } finally {
+      setListingLoading(false);
+    }
+  };
+  const ListingFlaggedService = async (payload) => {
+    try {
+      setListingFlaggedLoading(true);
+      const data = await ListingFlaggedCallApi(payload);
+      setListingFlagged(data);
+      console.log("✅ Listing Service Data from Context:", data);
+      return data;
+    } catch (error) {
+      console.error("Listing Service failed", error);
+      throw error;
+    } finally {
+      setListingFlaggedLoading(false);
+    }
+  };
+  const ListingDetailService = async (payload) => {
+    try {
+      setListingDetailLoading(true);
+      const data = await ListingDetailCallApi(payload);
+      setListingDetail(data);
+      console.log("✅ Listing Service Data from Context:", data);
+      return data;
+    } catch (error) {
+      console.error("Listing Service failed", error);
+      throw error;
+    } finally {
+      setListingDetailLoading(false);
+    }
+  };
+  const ListingSyncService = async () => {
+    try {
+      setListingSyncLoading(true);
+      await ListingSyncCallApi();
+    } catch (error) {
+      console.log("Listing is not sync Successfully");
+    } finally {
+      setListingSyncLoading(false);
+    }
+  };
+
+  return (
+    <ListingContext.Provider
+      value={{
+        ListingService,
+        listingLoading,
+        listingDetailLoading,
+        listingDetail,
+        ListingDetailService,
+        ListingSyncService,
+        listingSyncLoading,
+        listing,
+        EditListingService,
+        listingFlagged,
+        ListingFlaggedService,
+        listingFlaggedLoading,
+      }}
+    >
+      {children}
+    </ListingContext.Provider>
+  );
+};

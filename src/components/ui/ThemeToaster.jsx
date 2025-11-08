@@ -427,7 +427,7 @@ export function ThemeToaster() {
       setToasts((prev) => {
         const next = [...pending.reverse(), ...prev].slice(
           0,
-          themeToast._config.maxToasts
+          themeToast._config.maxToasts,
         );
         return next;
       });
@@ -480,6 +480,6 @@ export function ThemeToaster() {
         </div>
       ))}
     </div>,
-    document.body
+    document.body,
   );
 }

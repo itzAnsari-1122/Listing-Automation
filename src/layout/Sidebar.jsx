@@ -4,11 +4,11 @@ import { HiOutlineViewList } from "react-icons/hi";
 import { PiUserSwitch } from "react-icons/pi";
 
 import { FaUserGroup } from "react-icons/fa6";
-import { NavLink } from "react-router-dom";
-import { RiFileList3Fill } from "react-icons/ri";
-import Logo from "../assets/logo.png";
-import Profile from "../pages/profile/Profile";
 import { useAuth } from "../context/AuthContext";
+import { NavLink } from "react-router-dom";
+import Profile from "../pages/Profile/Profile";
+import Logo from "../assets/logo.png";
+import { RiFileList3Fill } from "react-icons/ri";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
   const { user, logout } = useAuth();
@@ -67,44 +67,36 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                 : "flex-col items-center"
             } gap-2`}
           >
-            {/* Logo Circle */}
             <div className={`flex items-center ${isOpen ? "gap-3" : ""}`}>
               <div
                 style={{
-                  width: 46,
-                  height: 46,
-                  borderRadius: "50%",
-                  backgroundColor: "#e6f6ff", // light bluish circle
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "2px solid #bfe9ff",
-                  overflow: "hidden",
-                  transition: "all 0.3s ease",
+                  width: 44,
+                  height: 44,
+                  borderRadius: 9999,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "var(--sidebar-logo-bg)",
+                  boxShadow: "0 6px 18px rgba(14,165,233,0.18)",
+                  transition: "transform 420ms ease-in-out",
+                  transform: isOpen ? "scale(1)" : "scale(0.95)",
                 }}
                 title="App Logo"
               >
                 <img
                   src={Logo}
                   alt="Logo"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    objectFit: "contain",
-                  }}
+                  width={28}
+                  height={28}
+                  style={{ borderRadius: "9999px", objectFit: "cover" }}
                 />
               </div>
+              {/* Removed the text label as requested - only icon shown */}
             </div>
 
-            {/* Sidebar Toggle Button */}
             <button
               onClick={toggleSidebar}
               className="flex items-center justify-center bg-white p-2 shadow transition hover:bg-gray-200"
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "6px",
-              }}
+              style={{ width: 36, height: 36 }}
             >
               {isOpen ? (
                 <FaChevronLeft size={14} className="text-gray-800" />

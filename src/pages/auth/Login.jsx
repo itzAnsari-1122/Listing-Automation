@@ -1,10 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { TextField } from "@mui/material";
+import MainCard from "../../components/Ui/MainCard";
+import TextField from "../../components/Ui/ThemeTextField";
+import ThemeButton from "../../components/Ui/ThemeButton";
 import { useAuth } from "../../context/AuthContext";
-import MainCard from "../../components/ui/MainCard";
-import ThemeTextField from "../../components/ui/ThemeTextField";
-import ThemeButton from "../../components/ui/ThemeButton";
 
 export default function Login() {
   const { loginService } = useAuth();
@@ -12,6 +11,7 @@ export default function Login() {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     defaultValues: { email: "", password: "" },
   });
@@ -41,7 +41,7 @@ export default function Login() {
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <ThemeTextField
+          <TextField
             label="Email"
             name="email"
             type="email"
@@ -54,7 +54,7 @@ export default function Login() {
             error={errors.email?.message}
           />
 
-          <ThemeTextField
+          <TextField
             label="Password"
             name="password"
             type="password"

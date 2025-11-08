@@ -2,17 +2,17 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiUsers, FiPlus, FiEdit2, FiTrash2, FiCamera } from "react-icons/fi";
 import { Tooltip } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
 import { GoPasskeyFill } from "react-icons/go";
-import MainCard from "../../components/ui/MainCard";
+import CustomTable from "../../components/Ui/CustomTable";
+import ThemeTextField from "../../components/Ui/ThemeTextField";
+import ThemeLoader from "../../components/Ui/ThemeLoader";
+import MainCard from "../../components/Ui/MainCard";
+import ThemeButton from "../../components/Ui/ThemeButton";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Search, X } from "lucide-react";
-import CustomTable from "../../components/ui/CustomTable";
-import ThemeButton from "../../components/ui/ThemeButton";
-import ThemeLoader from "../../components/ui/ThemeLoader";
-import ThemeTextField from "../../components/ui/ThemeTextField";
-import { useAuth } from "../../context/AuthContext";
 
 /* ───────────────────────── Helpers: Toast & Confirm ───────────────────────── */
 
@@ -22,8 +22,8 @@ function Toast({ open, onClose, type = "info", message }) {
     type === "success"
       ? "rgba(16,185,129,0.95)"
       : type === "error"
-      ? "rgba(239,68,68,0.95)"
-      : "rgba(59,130,246,0.95)";
+        ? "rgba(239,68,68,0.95)"
+        : "rgba(59,130,246,0.95)";
   return (
     <div
       className="fixed bottom-6 left-1/2 z-[9999] -translate-x-1/2 rounded-xl px-4 py-3 text-sm font-semibold shadow-xl"
@@ -98,7 +98,7 @@ export default function Users() {
     return users.filter(
       (u) =>
         (u.name || u.username || "").toLowerCase().includes(q) ||
-        (u.email || "").toLowerCase().includes(q)
+        (u.email || "").toLowerCase().includes(q),
     );
   }, [users, search]);
 
