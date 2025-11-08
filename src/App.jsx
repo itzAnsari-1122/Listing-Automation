@@ -10,8 +10,8 @@ import { theme } from "./theme";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import { AsinProvider } from "./context/AsinContext";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
-import JobConfigProvider from "./context/jobConfigContext";
 import AppRoutes from "./routes/Index";
+import JobConfigProvider from "./context/jobConfigContext";
 import { ThemeToaster } from "./components/Ui/ThemeToaster";
 
 export default function App() {
