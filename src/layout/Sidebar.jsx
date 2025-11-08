@@ -15,13 +15,13 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
   const menuItems = [
     {
-      to: "/Listing",
+      to: "/listing",
       icon: <RiFileList3Fill />,
       label: "Listing",
       roles: ["user", "admin"],
     },
     {
-      to: "/ListingReport",
+      to: "/listing-report",
       icon: <HiOutlineViewList />,
       label: "Listing Report",
       roles: ["user", "admin"],

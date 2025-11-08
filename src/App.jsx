@@ -9,10 +9,10 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { theme } from "./theme";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import { AsinProvider } from "./context/AsinContext";
-import { ThemeToaster } from "./components/Ui/ThemeToaster";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
 import JobConfigProvider from "./context/jobConfigContext";
 import AppRoutes from "./routes/Index";
+import { ThemeToaster } from "./components/Ui/ThemeToaster";
 
 export default function App() {
   return (
