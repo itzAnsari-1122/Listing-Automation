@@ -1,18 +1,9 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
 import ThemeLoader from "../components/Ui/ThemeLoader";
 import MainLayout from "../layout/MainLayout";
 import Login from "../pages/Auth/Login";
-import ForgotPassword from "../pages/Auth/ForgotPassword";
-import Catalog from "../pages/Catalog/Catalog";
-import Users from "../pages/User/Users";
-import Listing from "../pages/Listing/Listing";
-import Profile from "../pages/Profile/Profile";
-import ListingReport from "../pages/ListingReport/ListingReport";
-import ListingDetail from "../pages/Listing/Detail/listingDetail";
-import JobConfig from "../layout/jobConfig";
 import ComingSoon from "../pages/ComingSoon/ComingSoon";
 
 export default function AppRoutes() {
@@ -35,7 +26,7 @@ export default function AppRoutes() {
       {user?.role === "user" && (
         <>
           <Route
-            path="/listingReport"
+            path="/listing-report"
             element={
               <MainLayout>
                 <ComingSoon />
@@ -81,16 +72,8 @@ export default function AppRoutes() {
       {/* --- admin role --- */}
       {user?.role === "admin" && (
         <>
-          {/* <Route
-            path="/listing"
-            element={
-              <MainLayout>
-                <Catalog />
-              </MainLayout>
-            }
-          /> */}
           <Route
-            path="/listingReport"
+            path="/listing-report"
             element={
               <MainLayout>
                 <ComingSoon />
@@ -137,14 +120,6 @@ export default function AppRoutes() {
               </MainLayout>
             }
           />
-          {/* <Route
-            path="/settings"
-            element={
-              <MainLayout>
-                <Settings />
-              </MainLayout>
-            }
-          /> */}
           <Route path="*" element={<Navigate to="/listing" replace />} />
         </>
       )}
