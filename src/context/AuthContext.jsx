@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
       if (token) localStorage.setItem("token", token);
       themeToast.success("Login successful!");
+      navigate("/listing", { replace: true });
       return { data, token };
     } catch (error) {
       console.error("Login failed", error);

@@ -9,13 +9,14 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-import {
-  useJobConfig,
-  COUNTRIES_BY_REGION,
-  REGION_TYPES,
-} from "../context/jobConfigContext";
+
 import ThemeSelectField from "../components/ui/ThemeSelectField";
 import { PiUserSwitch } from "react-icons/pi";
+import {
+  COUNTRIES_BY_REGION,
+  REGION_TYPES,
+  useJobConfig,
+} from "../context/JobConfigContext";
 
 const JobConfig = () => {
   const {
