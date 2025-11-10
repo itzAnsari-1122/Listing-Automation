@@ -12,7 +12,7 @@ import { AsinProvider } from "./context/AsinContext";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
 import AppRoutes from "./routes/Index";
 import JobConfigProvider from "./context/JobConfigContext";
-import { ThemeToaster } from "./components/Ui/ThemeToaster";
+import { ThemeToaster } from "./components/ui/ThemeToaster";
 
 export default function App() {
   return (

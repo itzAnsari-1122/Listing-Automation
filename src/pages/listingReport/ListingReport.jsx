@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useListing } from "../../context/ListingContext";
-import CustomTable from "../../components/Ui/CustomTable";
+import CustomTable from "../../components/ui/CustomTable";
 import { FiBarChart2 } from "react-icons/fi";
 import { Tooltip, Chip } from "@mui/material";
-import ThemeButton from "../../components/Ui/ThemeButton";
+import ThemeButton from "../../components/ui/ThemeButton";
 import { useNavigate } from "react-router-dom";
-import ThemeChip from "../../components/Ui/ThemeChip";
+import ThemeChip from "../../components/ui/ThemeChip";
 
 function ListingReport() {
   const { ListingFlaggedService, listingFlaggedLoading, listingFlagged } =

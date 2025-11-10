@@ -27,13 +27,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import ThemeButton from "../components/Ui/ThemeButton";
-import ThemeChip from "../components/Ui/ThemeChip";
+import ThemeButton from "../components/ui/ThemeButton";
+import ThemeChip from "../components/ui/ThemeChip";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../context/NotificationContext";
-import ThemeSelectField from "../components/Ui/ThemeSelectField";
+import ThemeSelectField from "../components/ui/ThemeSelectField";
 import { CountryOptions } from "../utils";
-import ThemeLoader from "../components/Ui/ThemeLoader";
+import ThemeLoader from "../components/ui/ThemeLoader";
 
 const timeAgo = (date) => {
   const d = typeof date === "string" ? new Date(date) : date;

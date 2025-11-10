@@ -24,9 +24,9 @@ import {
 } from "react-icons/fa";
 
 import { useRestrictedWord } from "../../context/RestrictedWordContext";
-import ThemeTextField from "../Ui/ThemeTextField";
-import ThemeButton from "../Ui/ThemeButton";
-import ThemeLoader from "../Ui/ThemeLoader";
+import ThemeTextField from "../ui/ThemeTextField";
+import ThemeButton from "../ui/ThemeButton";
+import ThemeLoader from "../ui/ThemeLoader";
 
 const RestrictedWordModal = ({ open, onClose }) => {
   const [isUploadMode, setIsUploadMode] = useState(true);

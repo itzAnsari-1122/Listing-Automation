@@ -9,8 +9,8 @@ import {
   changePasswordCallApi,
 } from "../helpers/BackendHelper";
 import { useNavigate } from "react-router-dom";
-import ThemeLoader from "../components/Ui/ThemeLoader";
-import { themeToast } from "../components/Ui/ThemeToaster";
+import ThemeLoader from "../components/ui/ThemeLoader";
+import { themeToast } from "../components/ui/ThemeToaster";
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 

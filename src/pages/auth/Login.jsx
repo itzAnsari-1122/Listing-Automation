@@ -1,8 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import MainCard from "../../components/Ui/MainCard";
-import TextField from "../../components/Ui/ThemeTextField";
-import ThemeButton from "../../components/Ui/ThemeButton";
+import MainCard from "../../components/ui/MainCard";
+import TextField from "../../components/ui/ThemeTextField";
+import ThemeButton from "../../components/ui/ThemeButton";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {

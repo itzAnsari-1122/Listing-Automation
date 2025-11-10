@@ -1,11 +1,13 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Login from "../pages/Auth/Login";
-import ListingReport from "../pages/ListingReport/ListingReport";
-import ListingDetail from "../pages/listing/Detail/listingDetail";
+import Login from "../pages/auth/Login";
+import ListingReport from "../pages/listingReport/ListingReport";
+import ListingDetail from "../pages/listing/detail/ListingDetail";
 import Listing from "../pages/listing/Listing";
 import Profile from "../pages/profile/Profile";
 import Users from "../pages/user/Users";
+import MainLayout from "../layout/MainLayout";
+import JobConfig from "../layout/JobConfig";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -26,7 +28,7 @@ export default function AppRoutes() {
       {user?.role === "user" && (
         <>
           <Route
-            path="/listingReport"
+            path="/listing-report"
             element={
               <MainLayout>
                 <ListingReport />
@@ -73,7 +75,7 @@ export default function AppRoutes() {
       {user?.role === "admin" && (
         <>
           <Route
-            path="/listingReport"
+            path="/listing-report"
             element={
               <MainLayout>
                 <ListingReport />

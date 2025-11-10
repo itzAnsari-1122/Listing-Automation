@@ -14,7 +14,7 @@ import {
   COUNTRIES_BY_REGION,
   REGION_TYPES,
 } from "../context/jobConfigContext";
-import ThemeSelectField from "../components/Ui/ThemeSelectField";
+import ThemeSelectField from "../components/ui/ThemeSelectField";
 import { PiUserSwitch } from "react-icons/pi";
 
 const JobConfig = () => {

@@ -13,7 +13,7 @@ import {
   NotificationReadByIdCallApi,
   UnreadNotificationsCAllApi,
 } from "../helpers/BackendHelper";
-import socket from "../helpers/socket";
+import socket from "../helpers/Socket";
 
 const NotificationContext = createContext();
 export const useNotification = () => useContext(NotificationContext);

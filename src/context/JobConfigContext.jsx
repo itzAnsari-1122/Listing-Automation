@@ -3,7 +3,7 @@ import {
   jobConfigGetCallApi,
   jobConfigUpdateCallApi,
 } from "../helpers/BackendHelper";
-import { themeToast } from "../components/Ui/ThemeToaster";
+import { themeToast } from "../components/ui/ThemeToaster";
 
 const JobConfigContext = createContext();
 export const useJobConfig = () => useContext(JobConfigContext);

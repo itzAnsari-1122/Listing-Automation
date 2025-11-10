@@ -7,7 +7,7 @@ import {
   UploadAsinCsvCallApi,
   DownloadAsinCsvCallApi,
 } from "../helpers/BackendHelper";
-import { themeToast } from "../components/Ui/ThemeToaster";
+import { themeToast } from "../components/ui/ThemeToaster";
 
 const AsinContext = createContext(undefined);
 

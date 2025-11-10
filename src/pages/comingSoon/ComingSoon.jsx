@@ -1,6 +1,6 @@
 import React from "react";
 import { RiRocketFill } from "react-icons/ri";
-import ThemeButton from "../../components/Ui/ThemeButton";
+import ThemeButton from "../../components/ui/ThemeButton";
 
 const ComingSoon = () => {
   return (

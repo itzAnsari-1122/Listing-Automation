@@ -27,9 +27,9 @@ import {
   Search as SearchIcon,
 } from "lucide-react";
 import { useAsin } from "../../context/AsinContext";
-import ThemeTextField from "../Ui/ThemeTextField";
-import ThemeButton from "../Ui/ThemeButton";
-import ThemeLoader from "../Ui/ThemeLoader";
+import ThemeTextField from "../ui/ThemeTextField";
+import ThemeButton from "../ui/ThemeButton";
+import ThemeLoader from "../ui/ThemeLoader";
 import { FaTimes } from "react-icons/fa";
 import CustomTable from "./CustomTable";
 

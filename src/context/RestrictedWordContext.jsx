@@ -7,7 +7,7 @@ import {
   UploadRestrictedCsvCallApi,
   DownloadRestrictedCsvCallApi,
 } from "../helpers/BackendHelper";
-import { themeToast } from "../components/Ui/ThemeToaster";
+import { themeToast } from "../components/ui/ThemeToaster";
 
 const RestrictedWordContext = createContext(undefined);
 export const useRestrictedWord = () => useContext(RestrictedWordContext);
