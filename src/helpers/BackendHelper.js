@@ -1,6 +1,7 @@
 import { makeAPICall } from "./ApiHelper";
 import {
   ALL_USERS,
+  CHANGE_PASSWORD,
   DELETE_ACCOUNT,
   EDIT_PROFILE,
   LISTINGS,
@@ -9,6 +10,7 @@ import {
   LISTINGS_FLAGGED,
   LISTINGS_SYNC,
   LOGIN,
+  NOTIFICATION,
   PROFILE,
   REGISTER,
 } from "./UrlHelper";
@@ -23,6 +25,11 @@ export const editProfileCallApi = (id, data) =>
   makeAPICall({
     option: { method: "put", url: `${EDIT_PROFILE}?id=${id}` },
     data,
+  });
+export const changePasswordCallApi = (payload) =>
+  makeAPICall({
+    option: { method: "post", url: CHANGE_PASSWORD },
+    data: payload,
   });
 export const deleteAccountCallApi = (data) =>
   makeAPICall({
@@ -48,3 +55,55 @@ export const ListingFlaggedCallApi = (data) =>
 
 export const ListingSyncCallApi = () =>
   makeAPICall({ option: { method: "get", url: LISTINGS_SYNC } });
+export const NotificationCallApi = ({
+  page = 1,
+  limit = 10,
+  type = "all",
+  status = "all",
+  marketplaceIds = [],
+} = {}) =>
+  makeAPICall({
+    option: {
+      method: "post",
+      url: `${NOTIFICATION}/get?page=${page}&limit=${limit}&type=${type}&status=${status}`,
+    },
+    data: { marketplaceIds }, // ✅ wrapped in object
+  });
+
+export const NotificationReadByIdCallApi = (id) =>
+  makeAPICall({
+    option: {
+      method: "patch",
+      url: `${NOTIFICATION}/${id}/read`,
+    },
+  });
+export const DeleteAllNotificationByIdCallApi = () =>
+  makeAPICall({
+    option: {
+      method: "delete",
+      url: `${NOTIFICATION}`,
+    },
+  });
+export const DeleteAllReadNotificationByIdCallApi = () =>
+  makeAPICall({
+    option: {
+      method: "delete",
+      url: `${NOTIFICATION}/read`,
+    },
+  });
+
+export const NotificationMarkAllAsReadCallApi = () =>
+  makeAPICall({
+    option: {
+      method: "patch",
+      url: `${NOTIFICATION}/read/all`,
+    },
+  });
+export const UnreadNotificationsCAllApi = ({ marketplaceIds = [] }) =>
+  makeAPICall({
+    option: {
+      method: "post",
+      url: `${NOTIFICATION}/unread`,
+      data: marketplaceIds, // Use marketplaceIds
+    },
+  });

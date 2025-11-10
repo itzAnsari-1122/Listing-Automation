@@ -10,3 +10,4 @@ export const LISTINGS_DETAIL = "/listings/get-by-asin";
 export const LISTINGS_FLAGGED = "/listings/flagged";
 export const LISTINGS_SYNC = "/listings/sync";
 export const LISTINGS_EDIT = "/listings/edit";
+export const NOTIFICATION = "/notifications";
