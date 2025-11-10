@@ -8,6 +8,7 @@ import Users from "../pages/user/Users";
 import Listing from "../pages/listing/Listing";
 import ListingDetail from "../pages/listing/ListingDetails";
 import ListingReport from "../pages/listingReport/ListingReport";
+import JobConfig from "../layout/JobConfig";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -102,7 +103,7 @@ export default function AppRoutes() {
             path="/job-config"
             element={
               <MainLayout>
-                <ComingSoon />
+                <JobConfig />
               </MainLayout>
             }
           />

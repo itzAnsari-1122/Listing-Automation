@@ -24,9 +24,9 @@ import {
 } from "react-icons/fa";
 
 import { useAsin } from "../../context/AsinContext";
-import ThemeTextField from "../ui/ThemeTextField";
-import ThemeButton from "../ui/ThemeButton";
-import ThemeLoader from "../ui/ThemeLoader";
+import ThemeTextField from "./ThemeTextField";
+import ThemeButton from "./ThemeButton";
+import ThemeLoader from "./ThemeLoader";
 
 const AsinAddModal = ({ open, onClose }) => {
   const [isUploadMode, setIsUploadMode] = useState(true);

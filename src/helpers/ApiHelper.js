@@ -50,6 +50,7 @@ export async function makeAPICall(
       params,
       headers: {
         "Content-Type": contentType,
+        "ngrok-skip-browser-warning": "true",
         ...(config.headers || {}),
       },
       ...config,

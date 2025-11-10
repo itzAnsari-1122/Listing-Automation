@@ -1,4 +1,4 @@
-import { Search, X } from "lucide-react";
+import { Search, Upload, X } from "lucide-react";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiFileList3Fill } from "react-icons/ri";
 import { useListing } from "../../context/ListingContext";
@@ -15,6 +15,11 @@ import {
   FiRefreshCw,
 } from "react-icons/fi";
 import ThemeChip from "../../components/ui/ThemeChip";
+import AsinAddModal from "../../components/ui/AsinAddModel";
+import AsinModal from "../../components/ui/AsinModal";
+import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
+import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
+import { Box } from "@mui/material";
 
 const Listing = () => {
   const {
@@ -34,11 +39,11 @@ const Listing = () => {
   console.log(listing, "listingdata");
   const navigate = useNavigate();
 
-  //   const [showAsinModal, setShowAsinModal] = useState(false);
-  //   const [showRestrictedModal, setShowRestrictedWordModal] = useState(false);
-  //   const [showAddRestrictedModal, setShowAddRestrictedWordModal] =
-  //     useState(false);
-  //   const [showAddAsinModal, setShowAddAsinModal] = useState(false);
+  const [showAsinModal, setShowAsinModal] = useState(false);
+  const [showRestrictedModal, setShowRestrictedWordModal] = useState(false);
+  const [showAddRestrictedModal, setShowAddRestrictedWordModal] =
+    useState(false);
+  const [showAddAsinModal, setShowAddAsinModal] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -307,7 +312,8 @@ const Listing = () => {
           />
           Listing
         </h1>
-        {/* <Box sx={{ display: "flex", gap: 2 }}>
+
+        <Box sx={{ display: "flex", gap: 2 }}>
           <ThemeButton
             buttonType="button"
             onClick={() => setShowRestrictedWordModal(true)}
@@ -328,7 +334,7 @@ const Listing = () => {
             <Upload className="h-4 w-4" />
             <span style={{ marginLeft: "10px" }}> ASIN</span>
           </ThemeButton>
-        </Box> */}
+        </Box>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -528,7 +534,7 @@ const Listing = () => {
         </div>
       </div>
 
-      {/* {showAsinModal && (
+      {showAsinModal && (
         <AsinModal
           open={showAsinModal}
           onClose={() => setShowAsinModal(false)}
@@ -537,14 +543,14 @@ const Listing = () => {
       )}
 
       {showAddAsinModal && (
-        <AddAsinModal
+        <AsinAddModal
           open={showAddAsinModal}
           onClose={() => setShowAddAsinModal(false)}
         />
       )}
-     
+
       {showRestrictedModal && (
-        <RestrictedWordModal
+        <RestrictedWordsModal
           open={showRestrictedModal}
           onClose={() => setShowRestrictedWordModal(false)}
           onAddClick={() => setShowAddRestrictedWordModal(true)}
@@ -556,7 +562,7 @@ const Listing = () => {
           open={showAddRestrictedModal}
           onClose={() => setShowAddRestrictedWordModal(false)}
         />
-      )} */}
+      )}
     </div>
   );
 };

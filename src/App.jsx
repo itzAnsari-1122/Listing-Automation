@@ -9,6 +9,9 @@ import { ThemeToaster } from "./components/ui/ThemeToaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ListingProvider } from "./context/ListingContext";
 import { NotificationProvider } from "./context/Notificationcontext";
+import { AsinProvider } from "./context/AsinContext";
+import { RestrictedWordProvider } from "./context/RestrictedWordContext";
+import JobConfigProvider from "./context/JobConfigContext";
 
 export default function App() {
   return (
@@ -16,12 +19,18 @@ export default function App() {
       <AuthProvider>
         <ListingProvider>
           <NotificationProvider>
-            <ThemeToaster />
-            <ThemeProvider>
-              <MuiThemeProvider theme={theme}>
-                <AppRoutes />
-              </MuiThemeProvider>
-            </ThemeProvider>
+            <AsinProvider>
+              <RestrictedWordProvider>
+                <JobConfigProvider>
+                  <ThemeToaster />
+                  <ThemeProvider>
+                    <MuiThemeProvider theme={theme}>
+                      <AppRoutes />
+                    </MuiThemeProvider>
+                  </ThemeProvider>
+                </JobConfigProvider>
+              </RestrictedWordProvider>
+            </AsinProvider>
           </NotificationProvider>
         </ListingProvider>
       </AuthProvider>
