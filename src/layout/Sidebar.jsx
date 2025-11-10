@@ -2,7 +2,6 @@ import React from "react";
 import { FaChevronLeft, FaChevronRight, FaSignOutAlt } from "react-icons/fa";
 import { HiOutlineViewList } from "react-icons/hi";
 import { PiUserSwitch } from "react-icons/pi";
-
 import { FaUserGroup } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
 import { NavLink } from "react-router-dom";
@@ -75,7 +74,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                   borderRadius: 9999,
                   display: "grid",
                   placeItems: "center",
-                  background: "var(--sidebar-logo-bg)",
+                  background: "var(--color-primary-contrast)",
                   boxShadow: "0 6px 18px rgba(14,165,233,0.18)",
                   transition: "transform 420ms ease-in-out",
                   transform: isOpen ? "scale(1)" : "scale(0.95)",

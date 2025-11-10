@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Badge } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { MdOutlineNotificationsNone } from "react-icons/md";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Navbar({ sidebarOpen }) {
+  const { theme, toggleTheme } = useTheme();
   const [hidden, setHidden] = useState(false);
   const handleBellClick = (e) => {
-    console.log("Notification  clicked");
+    console.log("Notification clicked");
   };
 
   return (
@@ -44,13 +47,13 @@ export default function Navbar({ sidebarOpen }) {
               </Badge>
             </IconButton>
 
-            {/* <IconButton
+            <IconButton
               aria-label="Toggle theme"
               onClick={toggleTheme}
               sx={{ color: "var(--navbar-icon)", p: 1.25 }}
             >
               {theme === "light" ? <Brightness4 /> : <Brightness7 />}
-            </IconButton> */}
+            </IconButton>
           </div>
         </Toolbar>
       </AppBar>
