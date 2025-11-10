@@ -26,11 +26,7 @@ export const editProfileCallApi = (id, data) =>
     option: { method: "put", url: `${EDIT_PROFILE}?id=${id}` },
     data,
   });
-export const changePasswordCallApi = (payload) =>
-  makeAPICall({
-    option: { method: "post", url: CHANGE_PASSWORD },
-    data: payload,
-  });
+
 export const deleteAccountCallApi = (data) =>
   makeAPICall({
     option: { method: "delete", url: `${DELETE_ACCOUNT}` },
