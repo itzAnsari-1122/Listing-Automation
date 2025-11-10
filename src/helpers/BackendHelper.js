@@ -36,6 +36,11 @@ export const deleteAccountCallApi = (data) =>
     option: { method: "delete", url: `${DELETE_ACCOUNT}` },
     data,
   });
+export const changePasswordCallApi = (payload) =>
+  makeAPICall({
+    option: { method: "post", url: CHANGE_PASSWORD },
+    data: payload,
+  });
 export const usersCallApi = () =>
   makeAPICall({ option: { method: "get", url: ALL_USERS } });
 export const EditListingCallApi = (asin, data, marketplaceIds) =>
