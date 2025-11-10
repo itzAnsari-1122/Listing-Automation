@@ -4,6 +4,7 @@ import Login from "../pages/auth/Login";
 import MainLayout from "../layout/MainLayout";
 import ComingSoon from "../pages/comingSoon/ComingSoon";
 import ThemeLoader from "../components/ui/ThemeLoader";
+import Users from "../pages/user/Users";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -90,7 +91,7 @@ export default function AppRoutes() {
             path="/users"
             element={
               <MainLayout>
-                <ComingSoon />
+                <Users />
               </MainLayout>
             }
           />
