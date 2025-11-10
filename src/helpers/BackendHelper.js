@@ -108,12 +108,11 @@ export const NotificationMarkAllAsReadCallApi = () =>
       url: `${NOTIFICATION}/read/all`,
     },
   });
-export const UnreadNotificationsCAllApi = ({ marketplaceIds = [] }) =>
+export const UnreadNotificationsCAllApi = () =>
   makeAPICall({
     option: {
       method: "post",
       url: `${NOTIFICATION}/unread`,
-      data: marketplaceIds, // Use marketplaceIds
     },
   });
 export const EditListingCallApi = (asin, data, marketplaceIds) =>
