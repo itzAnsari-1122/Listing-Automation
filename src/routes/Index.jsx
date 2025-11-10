@@ -5,6 +5,9 @@ import MainLayout from "../layout/MainLayout";
 import ComingSoon from "../pages/comingSoon/ComingSoon";
 import ThemeLoader from "../components/ui/ThemeLoader";
 import Users from "../pages/user/Users";
+import Listing from "../pages/listing/Listing";
+import ListingDetail from "../pages/listing/ListingDetails";
+import ListingReport from "../pages/listingReport/ListingReport";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -75,7 +78,7 @@ export default function AppRoutes() {
             path="/listing-report"
             element={
               <MainLayout>
-                <ComingSoon />
+                <ListingReport />
               </MainLayout>
             }
           />
@@ -83,7 +86,7 @@ export default function AppRoutes() {
             path="/listing/:asin"
             element={
               <MainLayout>
-                <ComingSoon />
+                <ListingDetail />
               </MainLayout>
             }
           />
@@ -107,7 +110,7 @@ export default function AppRoutes() {
             path="/listing"
             element={
               <MainLayout>
-                <ComingSoon />
+                <Listing />
               </MainLayout>
             }
           />

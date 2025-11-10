@@ -1,2 +1,12 @@
 export const LOGIN = "/auth/login";
 export const PROFILE = "/auth/profile";
+export const REGISTER = "/auth/register";
+export const DELETE_ACCOUNT = "/auth/delete-account";
+export const EDIT_PROFILE = "/auth/edit-profile";
+export const CHANGE_PASSWORD = "/auth/change-password";
+export const ALL_USERS = "/auth/users";
+export const LISTINGS = "/listings";
+export const LISTINGS_DETAIL = "/listings/get-by-asin";
+export const LISTINGS_FLAGGED = "/listings/flagged";
+export const LISTINGS_SYNC = "/listings/sync";
+export const LISTINGS_EDIT = "/listings/edit";

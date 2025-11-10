@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setUserLoading(true);
       const { data } = await getProfileCallApi();
-      setUser(data);
+      // setUser(data);
       return data;
     } catch (error) {
       console.error("Get profile failed", error);
