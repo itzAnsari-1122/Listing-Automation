@@ -4,9 +4,6 @@ import { MdOutlineNotificationsNone } from "react-icons/md";
 
 export default function Navbar({ sidebarOpen }) {
   const [hidden, setHidden] = useState(false);
-  const handleBellClick = (e) => {
-    console.log("Notification  clicked");
-  };
 
   return (
     <>
@@ -36,7 +33,6 @@ export default function Navbar({ sidebarOpen }) {
           <div className="flex items-center gap-2">
             <IconButton
               aria-label="Open notifications"
-              onClick={handleBellClick}
               sx={{ color: "var(--navbar-icon)", p: 1.25 }}
             >
               <Badge badgeContent={Number(0)} color="error">

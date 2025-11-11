@@ -30,7 +30,6 @@ axiosApi.interceptors.response.use(
       error?.response?.data?.message ||
       error.message;
 
-    console.error(`🚨 API Error [${status || "No Status"}]:`, msg);
     return Promise.reject(error.response || error);
   },
 );

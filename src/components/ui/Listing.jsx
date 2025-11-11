@@ -35,8 +35,6 @@ const Listing = () => {
   const [rowsPerPage, setRowsPerPage] = useState(listing?.count || 10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [syncing, setSyncing] = useState(false);
-  console.log(listing, "listingdata");
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -356,11 +354,6 @@ const Listing = () => {
             onClick={() => {
               if (row?.asin && row?.marketplaceId) {
                 navigate(`/listing/${row.asin}?id=${row.marketplaceId}`);
-              } else {
-                console.warn(
-                  "Missing asin or marketplaceId for navigation: ",
-                  row,
-                );
               }
             }}
             sx={{
@@ -582,8 +575,6 @@ const Listing = () => {
 
                 const codes = payload.map((p) => p.code);
                 // if you need ISO country codes for something else:
-                console.log("Selected market IDs:", values);
-                console.log("Selected country codes:", codes);
               }}
               options={CountryOptions}
               placeholder="Select countries"
