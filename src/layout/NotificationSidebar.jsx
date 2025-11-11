@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { CountryOptions } from "../utils";
 import ThemeLoader from "../components/ui/ThemeLoader";
 import ThemeButton from "../components/ui/ThemeButton";
-import { useNotification } from "../context/Notificationcontext";
+import { useNotification } from "../context/NotificationContext";
 import ThemeSelectField from "../components/ui/ThemeSelectField";
 
 const timeAgo = (date) => {
