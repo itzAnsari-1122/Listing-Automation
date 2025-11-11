@@ -8,7 +8,7 @@ import AppRoutes from "./routes/Index";
 import { ThemeToaster } from "./components/ui/ThemeToaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ListingProvider } from "./context/ListingContext";
-import { NotificationProvider } from "./context/Notificationcontext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 export default function App() {
   return (

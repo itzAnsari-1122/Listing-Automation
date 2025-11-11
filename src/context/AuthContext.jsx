@@ -1,5 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { loginCallApi, getProfileCallApi } from "../helpers/BackendHelper";
+import {
+  loginCallApi,
+  getProfileCallApi,
+  usersCallApi,
+  registerCallApi,
+  editProfileCallApi,
+  changePasswordCallApi,
+  deleteAccountCallApi,
+} from "../helpers/BackendHelper";
 import { useNavigate } from "react-router-dom";
 import ThemeLoader from "../components/ui/ThemeLoader";
 import { themeToast } from "../components/ui/ThemeToaster";
