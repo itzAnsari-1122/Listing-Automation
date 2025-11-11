@@ -35,15 +35,11 @@ import {
   Maximize,
   Copy,
   Globe2,
-  Save,
-  X,
 } from "lucide-react";
 
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import ThemeLoader from "../../components/ui/ThemeLoader";
 import ThemeButton from "../../components/ui/ThemeButton";
-import ThemeTextField from "../../components/ui/ThemeTextField";
 import ThemeSelectField from "../../components/ui/ThemeSelectField";
 import CustomTable from "../../components/ui/CustomTable";
 import { useListing } from "../../context/ListingContext";
@@ -238,14 +234,6 @@ const attrObjectToRows = (attrs = {}) => {
   return rows;
 };
 
-const attrsToSimpleMap = (attrs = {}) => {
-  const map = {};
-  attrObjectToRows(attrs).forEach(({ key, value }) => {
-    map[key] = value;
-  });
-  return map;
-};
-
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 function extractRestrictedWords(violations = []) {
@@ -305,19 +293,12 @@ export default function ListingDetail() {
   const marketplaceId = searchParams.get("id");
   const { user } = useAuth();
 
-  const {
-    ListingDetailService,
-    listingLoading,
-    listingDetail,
-    EditListingService,
-  } = useListing();
+  const { ListingDetailService, listingLoading, listingDetail } = useListing();
 
   const [selectedCountry, setSelectedCountry] = useState("");
   const [productData, setProductData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState("");
-  const [saving, setSaving] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -334,9 +315,6 @@ export default function ListingDetail() {
   const lastKeyRef = useRef(null);
   const reqIdRef = useRef(0);
 
-  const latestFormValuesRef = useRef(null);
-  const initialDataLoadedRef = useRef(false); // NEW: Track if initial data is loaded
-
   const retry = () => {
     if (abortRef.current) abortRef.current.abort();
     lastKeyRef.current = null;
@@ -344,7 +322,6 @@ export default function ListingDetail() {
     setImgIndex(0);
     setErrMsg("");
     setLoading(true);
-    initialDataLoadedRef.current = false; // RESET: Reset the flag on retry
     setRetryTick((x) => x + 1);
   };
 
@@ -359,9 +336,7 @@ export default function ListingDetail() {
     setSearchParams(next, { replace: true });
     setProductData(null);
     setImgIndex(0);
-    setIsEditing(false);
     setLoading(true);
-    initialDataLoadedRef.current = false; // RESET: Reset the flag on marketplace change
   };
 
   const fetchKey = useMemo(
@@ -453,312 +428,6 @@ export default function ListingDetail() {
     }
   }, [listingDetail, asin, marketplaceId]);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors, isDirty },
-  } = useForm({
-    defaultValues: {
-      itemName: "",
-      productType: "",
-      brand: "",
-      manufacturer: "",
-      price: "",
-      listPrice: "",
-      formVal: "",
-      color: "",
-      notes: "",
-      productAttributes: {},
-      itemAttributes: {},
-      highlights: [],
-    },
-  });
-
-  // FIXED: Only reset form when productData changes AND we're not editing
-  useEffect(() => {
-    if (!productData || initialDataLoadedRef.current) return;
-
-    console.log("📝 ProductData for form setup:", productData);
-    console.log("🔍 Available keys:", Object.keys(productData));
-
-    // Extract data with better fallbacks
-    const summaries = productData.summaries || [];
-    const rawSummary = summaries[0] || {};
-
-    const attributes = productData.attributes || {};
-    const productAttr = Array.isArray(attributes)
-      ? attributes[0] || {}
-      : attributes;
-
-    const items = productData.items || [];
-    const item = items[0] || {};
-    const attrItem = item.attributes || {};
-
-    const images = productData.images || [];
-    const productTypes = productData.productTypes || [];
-    const salesRanks = productData.salesRanks || [];
-    const identifiers = productData.identifiers || [];
-
-    console.log("📊 Extracted data:", {
-      summariesCount: summaries.length,
-      attributesCount: Object.keys(productAttr).length,
-      itemsCount: items.length,
-      imagesCount: images.length,
-      productTypes: productTypes.length,
-      salesRanks: salesRanks.length,
-      identifiers: identifiers.length,
-    });
-
-    const safeSummary = {
-      ...rawSummary,
-      status: Array.isArray(rawSummary.status)
-        ? rawSummary.status
-        : rawSummary.status
-          ? [rawSummary.status]
-          : [],
-      itemName: rawSummary.itemName || productData.normalized?.itemName || "",
-      mainImage:
-        rawSummary.mainImage?.link ||
-        images[0]?.link ||
-        (images[0]?.images && images[0].images[0]?.link) ||
-        null,
-      marketplaceId:
-        rawSummary.marketplaceId || productData.marketplaceId || "",
-      productType:
-        rawSummary.productType ||
-        (productTypes[0] && productTypes[0].productType) ||
-        "",
-    };
-
-    // Extract highlights from bullet points
-    const highlightsArr = (productAttr.bullet_point || [])
-      .map((bullet) => {
-        if (typeof bullet === "string") return bullet;
-        if (bullet && typeof bullet === "object") return bullet.value;
-        return null;
-      })
-      .filter(Boolean);
-
-    console.log("🌟 Highlights extracted:", highlightsArr);
-
-    // Prepare form values
-    const formValues = {
-      itemName:
-        safeSummary.itemName ||
-        (productAttr.item_name && productAttr.item_name[0]?.value) ||
-        "",
-      productType: safeSummary.productType || "",
-      brand:
-        getAttr(productAttr, "brand") ||
-        safeSummary.brand ||
-        productData.normalized?.brand ||
-        "",
-      manufacturer:
-        getAttr(productAttr, "manufacturer") || safeSummary.manufacturer || "",
-      price:
-        getAttr(attrItem, "purchasable_offer") ||
-        (item.offers && item.offers[0]?.price?.amount) ||
-        "",
-      listPrice:
-        getAttr(productAttr, "list_price") ||
-        (productAttr.list_price && productAttr.list_price[0]?.value) ||
-        "",
-      formVal:
-        getAttr(productAttr, "item_form") ||
-        (productAttr.item_form && productAttr.item_form[0]?.value) ||
-        "",
-      color:
-        getAttr(productAttr, "color") ||
-        safeSummary.color ||
-        productData.normalized?.color ||
-        "",
-      notes: productData.notesMessage || "",
-      productAttributes: attrsToSimpleMap(productAttr),
-      itemAttributes: attrsToSimpleMap(attrItem),
-      highlights: highlightsArr,
-    };
-
-    console.log("✅ Final form values:", formValues);
-
-    reset(formValues);
-    latestFormValuesRef.current = formValues;
-    setProductData((prev) => ({ ...prev, __safeSummary: safeSummary }));
-
-    // MARK: Set flag to indicate initial data is loaded
-    initialDataLoadedRef.current = true;
-  }, [productData, reset]); // Only run when productData changes
-
-  // NEW: Reset the flag when editing mode changes or component unmounts
-  useEffect(() => {
-    return () => {
-      initialDataLoadedRef.current = false;
-    };
-  }, []);
-
-  // Improved payload preparation
-  const prepareEditPayload = (formData) => {
-    const payload = {
-      updates: {},
-    };
-
-    console.log("🔄 Preparing edit payload...");
-
-    // Helper to check if value changed
-    const hasChanged = (field, newValue) => {
-      const oldValue = latestFormValuesRef.current?.[field];
-      return JSON.stringify(newValue) !== JSON.stringify(oldValue);
-    };
-
-    // Update core fields
-    const coreFields = {
-      itemName: "item_name",
-      brand: "brand",
-      manufacturer: "manufacturer",
-      color: "color",
-      formVal: "item_form",
-      listPrice: "list_price",
-      notes: "notes",
-    };
-
-    Object.entries(coreFields).forEach(([formField, updateField]) => {
-      if (
-        formData[formField] !== undefined &&
-        hasChanged(formField, formData[formField])
-      ) {
-        payload.updates[updateField] = formData[formField];
-        console.log(`📝 Updating ${updateField}:`, formData[formField]);
-      }
-    });
-
-    // Update highlights/bullet points
-    if (formData.highlights && hasChanged("highlights", formData.highlights)) {
-      payload.updates.bullet_point = formData.highlights.filter(Boolean);
-      console.log("📝 Updating bullet_point:", formData.highlights);
-    }
-
-    // Update product attributes
-    if (
-      formData.productAttributes &&
-      Object.keys(formData.productAttributes).length > 0
-    ) {
-      const changedAttrs = {};
-      Object.entries(formData.productAttributes).forEach(([key, value]) => {
-        const oldValue = latestFormValuesRef.current?.productAttributes?.[key];
-        if (value !== oldValue) {
-          changedAttrs[key] = value;
-        }
-      });
-
-      if (Object.keys(changedAttrs).length > 0) {
-        payload.updates.productAttributes = changedAttrs;
-        console.log("📝 Updating productAttributes:", changedAttrs);
-      }
-    }
-
-    // Update item attributes
-    if (
-      formData.itemAttributes &&
-      Object.keys(formData.itemAttributes).length > 0
-    ) {
-      const changedAttrs = {};
-      Object.entries(formData.itemAttributes).forEach(([key, value]) => {
-        const oldValue = latestFormValuesRef.current?.itemAttributes?.[key];
-        if (value !== oldValue) {
-          changedAttrs[key] = value;
-        }
-      });
-
-      if (Object.keys(changedAttrs).length > 0) {
-        payload.updates.itemAttributes = changedAttrs;
-        console.log("📝 Updating itemAttributes:", changedAttrs);
-      }
-    }
-
-    console.log("✅ Final payload:", payload);
-    return payload;
-  };
-
-  const onSubmit = async (form) => {
-    setSaving(true);
-    setErrMsg("");
-
-    try {
-      const payload = prepareEditPayload(form);
-
-      if (Object.keys(payload.updates).length === 0) {
-        setIsEditing(false);
-        setSaving(false);
-        return;
-      }
-
-      console.log("🚀 Sending update request...");
-
-      const result = await EditListingService(asin, payload, marketplaceId);
-
-      if (result?.success) {
-        console.log("✅ Backend response:", result);
-
-        // Refresh data
-        const freshData = await ListingDetailService({ asin, marketplaceId });
-
-        if (freshData?.success) {
-          const normalizedData = normalizeListing(freshData);
-          setProductData(normalizedData);
-          latestFormValuesRef.current = form;
-          // MARK: Keep the flag as true since we want to preserve the form state
-        } else if (result.updatedListing) {
-          setProductData(result.updatedListing);
-          latestFormValuesRef.current = form;
-        }
-
-        setIsEditing(false);
-      } else {
-        throw new Error(result?.message || "Failed to save listing");
-      }
-    } catch (e) {
-      console.error("❌ Save error:", e);
-      const errorMessage = e?.message || "Failed to save listing.";
-      setErrMsg(errorMessage);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleCancel = () => {
-    if (latestFormValuesRef.current) {
-      reset(latestFormValuesRef.current);
-    }
-    setIsEditing(false);
-  };
-
-  // Enhanced data extraction for render
-  const summaries = productData?.summaries || [];
-  const summary = productData?.__safeSummary || summaries[0] || {};
-
-  const items = productData?.items || [];
-  const item =
-    items.find((i) => i?.summaries?.[0]?.status?.includes("BUYABLE")) ||
-    items[0] ||
-    {};
-  const attrItem = item?.attributes || {};
-
-  const attributes = productData?.attributes || {};
-  const productAttr = Array.isArray(attributes)
-    ? attributes[0] || {}
-    : attributes;
-
-  const offers = item?.offers || [];
-  const offer = offers[0];
-
-  console.log("🎯 Render data:", {
-    summary,
-    item,
-    productAttr: Object.keys(productAttr),
-    offer,
-  });
-
   const restrictedWords = useMemo(
     () => extractRestrictedWords(productData?.violations || []),
     [productData?.violations],
@@ -795,25 +464,25 @@ export default function ListingDetail() {
           }))
         : [];
 
-    const locatorKeys = Object.keys(attrItem || {}).filter((k) =>
+    const locatorKeys = Object.keys(productData?.attributes || {}).filter((k) =>
       /^other_product_image_locator_\d+$/.test(k),
     );
     const locators = [];
-    if (Array.isArray(attrItem?.main_product_image_locator)) {
-      const m = attrItem.main_product_image_locator[0];
+    if (Array.isArray(productData?.attributes?.main_product_image_locator)) {
+      const m = productData.attributes.main_product_image_locator[0];
       if (m?.media_location) {
         locators.push({
           media_location: m.media_location,
-          marketplace_id: m.marketplace_id || summary.marketplaceId,
+          marketplace_id: m.marketplace_id || productData.marketplaceId,
         });
       }
     }
     locatorKeys.forEach((k) => {
-      const v = attrItem[k]?.[0];
+      const v = productData.attributes?.[k]?.[0];
       if (v?.media_location)
         locators.push({
           media_location: v.media_location,
-          marketplace_id: v.marketplace_id || summary.marketplaceId,
+          marketplace_id: v.marketplace_id || productData.marketplaceId,
         });
     });
 
@@ -845,7 +514,7 @@ export default function ListingDetail() {
       sliderImages: Array.isArray(_slider) ? _slider : [],
       imageRows: _imageRows || [],
     };
-  }, [listingDetail, summary?.marketplaceId]);
+  }, [productData]);
 
   useEffect(() => {
     if (!Array.isArray(sliderImages)) return;
@@ -950,6 +619,32 @@ export default function ListingDetail() {
     return <ThemeLoader message="Loading..." />;
   }
 
+  // Enhanced data extraction for render
+  const summaries = productData?.summaries || [];
+  const summary = summaries[0] || {};
+
+  const items = productData?.items || [];
+  const item =
+    items.find((i) => i?.summaries?.[0]?.status?.includes("BUYABLE")) ||
+    items[0] ||
+    {};
+  const attrItem = item?.attributes || {};
+
+  const attributes = productData?.attributes || {};
+  const productAttr = Array.isArray(attributes)
+    ? attributes[0] || {}
+    : attributes;
+
+  const offers = item?.offers || [];
+  const offer = offers[0];
+
+  console.log("🎯 Render data:", {
+    summary,
+    item,
+    productAttr: Object.keys(productAttr),
+    offer,
+  });
+
   const overview = [
     { key: "ASIN", value: productData.asin },
     { key: "SKU", value: item.sku || item.sellerSku || "" },
@@ -998,71 +693,33 @@ export default function ListingDetail() {
   const productAttrRows = attrObjectToRows(productAttr);
   const itemAttrRows = attrObjectToRows(attrItem);
 
-  const highlightsData =
-    (watch("highlights") || []).map((t, i) => ({ idx: i + 1, text: t })) || [];
+  // Extract highlights from bullet points
+  const highlightsData = (productAttr.bullet_point || [])
+    .map((bullet, index) => {
+      if (typeof bullet === "string") return { idx: index + 1, text: bullet };
+      if (bullet && typeof bullet === "object")
+        return { idx: index + 1, text: bullet.value };
+      return null;
+    })
+    .filter(Boolean);
 
-  const overviewColumns = () => [
+  const overviewColumns = [
     { id: "key", label: "Key", minWidth: 140 },
     {
       id: "value",
       label: "Value",
       minWidth: 240,
-      render: (row) =>
-        isEditing &&
-        ["Brand", "Manufacturer", "Form", "Color", "List Price"].includes(
-          row.key,
-        ) ? (
-          <ThemeTextField
-            isController
-            control={control}
-            name={
-              row.key === "Brand"
-                ? "brand"
-                : row.key === "Manufacturer"
-                  ? "manufacturer"
-                  : row.key === "Form"
-                    ? "formVal"
-                    : row.key === "Color"
-                      ? "color"
-                      : "listPrice"
-            }
-            placeholder={row.key}
-            rules={{
-              validate: (v) =>
-                containsRestricted(v, restrictedWords)
-                  ? "Contains restricted word"
-                  : true,
-            }}
-          />
-        ) : (
-          <Highlighted text={row.value} words={restrictedWords} />
-        ),
+      render: (row) => <Highlighted text={row.value} words={restrictedWords} />,
     },
   ];
 
-  const attrColumns = (formKey) => [
+  const attrColumns = [
     { id: "key", label: "Key", minWidth: 220 },
     {
       id: "value",
       label: "Value",
       minWidth: 320,
-      render: (row) =>
-        isEditing ? (
-          <ThemeTextField
-            isController
-            control={control}
-            name={`${formKey}.${row.key}`}
-            placeholder={row.key}
-            rules={{
-              validate: (v) =>
-                containsRestricted(v, restrictedWords)
-                  ? "Contains restricted word"
-                  : true,
-            }}
-          />
-        ) : (
-          <Highlighted text={row.value} words={restrictedWords} />
-        ),
+      render: (row) => <Highlighted text={row.value} words={restrictedWords} />,
     },
   ];
 
@@ -1072,23 +729,7 @@ export default function ListingDetail() {
       id: "text",
       label: "Highlight",
       minWidth: 420,
-      render: (row) =>
-        isEditing ? (
-          <ThemeTextField
-            isController
-            control={control}
-            name={`highlights.${row.idx - 1}`}
-            placeholder={`Highlight ${row.idx}`}
-            rules={{
-              validate: (v) =>
-                containsRestricted(v, restrictedWords)
-                  ? "Contains restricted word"
-                  : true,
-            }}
-          />
-        ) : (
-          <Highlighted text={row.text} words={restrictedWords} />
-        ),
+      render: (row) => <Highlighted text={row.text} words={restrictedWords} />,
     },
   ];
 
@@ -1156,26 +797,6 @@ export default function ListingDetail() {
                 placeholder="Select country"
                 width="240px"
               />
-              <ThemeButton
-                onClick={() => setIsEditing((p) => !p)}
-                size="sm"
-                variant={isEditing ? "outline" : "solid"}
-                tone={"primary"}
-                startIcon={isEditing ? <X size={16} /> : <Save size={16} />}
-              >
-                {isEditing ? "CANCEL" : "EDIT"}
-              </ThemeButton>
-              {isEditing && (
-                <ThemeButton
-                  size="sm"
-                  sx={{ bgcolor: "var(--color-primary)", color: "#fff" }}
-                  onClick={handleSubmit(onSubmit)}
-                  disabled={saving || !isDirty}
-                  startIcon={<Save size={16} />}
-                >
-                  {saving ? "SAVING..." : "SAVE CHANGES"}
-                </ThemeButton>
-              )}
             </Box>
           </Box>
 
@@ -1222,7 +843,7 @@ export default function ListingDetail() {
                     <img
                       src={
                         summary?.mainImage ||
-                        sliderImages[0].url ||
+                        sliderImages[0]?.url ||
                         "/no-image.png"
                       }
                       alt={summary?.itemName || "No image"}
@@ -1237,33 +858,15 @@ export default function ListingDetail() {
               </div>
 
               <div className="min-w-0 flex-1">
-                {!isEditing ? (
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 900, lineHeight: 1.2 }}
-                  >
-                    <Highlighted
-                      text={summary.itemName || "—"}
-                      words={restrictedWords}
-                    />
-                  </Typography>
-                ) : (
-                  <ThemeTextField
-                    isController
-                    control={control}
-                    name="itemName"
-                    label="Product Name"
-                    rules={{
-                      required: "Product name is required",
-                      validate: (v) =>
-                        containsRestricted(v, restrictedWords)
-                          ? "Contains restricted word"
-                          : true,
-                    }}
-                    error={!!errors.itemName}
-                    helperText={errors.itemName?.message}
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 900, lineHeight: 1.2 }}
+                >
+                  <Highlighted
+                    text={summary.itemName || "—"}
+                    words={restrictedWords}
                   />
-                )}
+                </Typography>
 
                 <Stack
                   direction="row"
@@ -1320,7 +923,7 @@ export default function ListingDetail() {
               <SectionCard title="Overview">
                 <Box sx={{ width: "100%", overflowX: "auto" }}>
                   <CustomTable
-                    columns={overviewColumns()}
+                    columns={overviewColumns}
                     data={overview}
                     totalCount={overview.length}
                     pagination={false}
@@ -1467,7 +1070,7 @@ export default function ListingDetail() {
               <div>
                 <SectionCard title="Product Attributes">
                   <CustomTable
-                    columns={attrColumns("productAttributes")}
+                    columns={attrColumns}
                     data={productAttrRows}
                     totalCount={productAttrRows.length}
                     pagination={false}
@@ -1483,7 +1086,7 @@ export default function ListingDetail() {
                   subtitle="Sourced from your offer/listing"
                 >
                   <CustomTable
-                    columns={attrColumns("itemAttributes")}
+                    columns={attrColumns}
                     data={itemAttrRows}
                     totalCount={itemAttrRows.length}
                     pagination={false}
@@ -1641,65 +1244,13 @@ export default function ListingDetail() {
 
           {/* Notes Section */}
           <SectionCard title="Notes">
-            {!isEditing ? (
-              <Typography variant="body2">
-                <Highlighted
-                  text={productData.notesMessage || "—"}
-                  words={restrictedWords}
-                />
-              </Typography>
-            ) : (
-              <ThemeTextField
-                isController
-                control={control}
-                name="notes"
-                label="Notes Message"
-                multiline
-                rows={3}
-                rules={{
-                  validate: (v) =>
-                    containsRestricted(v, restrictedWords)
-                      ? "Contains restricted word"
-                      : true,
-                }}
+            <Typography variant="body2">
+              <Highlighted
+                text={productData.notesMessage || "—"}
+                words={restrictedWords}
               />
-            )}
+            </Typography>
           </SectionCard>
-
-          {/* Edit Mode Actions */}
-          {isEditing && (
-            <Box
-              sx={{
-                position: "sticky",
-                bottom: 0,
-                mt: 2,
-                pt: 2,
-                display: "flex",
-                gap: 2,
-                justifyContent: "flex-end",
-                background:
-                  "linear-gradient(180deg, rgba(0,0,0,0) 0%, var(--color-bg) 60%)",
-              }}
-            >
-              <ThemeButton
-                variant="outline"
-                size="sm"
-                onClick={handleCancel}
-                startIcon={<X size={16} />}
-              >
-                CANCEL
-              </ThemeButton>
-              <ThemeButton
-                size="sm"
-                sx={{ bgcolor: "var(--color-primary)", color: "#fff" }}
-                onClick={handleSubmit(onSubmit)}
-                disabled={saving || !isDirty}
-                startIcon={<Save size={16} />}
-              >
-                {saving ? "SAVING..." : "SAVE CHANGES"}
-              </ThemeButton>
-            </Box>
-          )}
         </CardContent>
       </Card>
 
