@@ -38,16 +38,12 @@ export const NotificationProvider = ({ children }) => {
 
   // ✅ Enhanced socket connection management
   const initializeSocket = () => {
-    console.log("🔄 Initializing socket connection...");
-
     // Socket connection events
     const handleConnect = () => {
-      console.log("✅ Socket connected in NotificationContext");
       setSocketConnected(true);
     };
 
     const handleDisconnect = (reason) => {
-      console.log("❌ Socket disconnected:", reason);
       setSocketConnected(false);
     };
 
@@ -57,14 +53,11 @@ export const NotificationProvider = ({ children }) => {
     };
 
     const handleReconnect = (attempt) => {
-      console.log(`🔄 Socket reconnected after ${attempt} attempts`);
       setSocketConnected(true);
     };
 
     // ✅ Enhanced notification handler
     const handleNewNotification = (notification) => {
-      console.log("📢 New notification received via socket:", notification);
-
       // Validate notification structure
       if (!notification || !notification._id) {
         console.warn("⚠️ Invalid notification received:", notification);
@@ -115,19 +108,15 @@ export const NotificationProvider = ({ children }) => {
     socket.on("new-notification", handleNewNotification);
 
     // Debug: log all socket events
-    socket.onAny((event, ...args) => {
-      console.log(`🔍 Socket event [${event}]:`, args);
-    });
+    socket.onAny((event, ...args) => {});
 
     // Check initial connection state
     if (socket.connected) {
       setSocketConnected(true);
-      console.log("✅ Socket already connected on mount");
     }
 
     // Return cleanup function
     return () => {
-      console.log("🧹 Cleaning up socket listeners");
       socket.off("connect", handleConnect);
       socket.off("disconnect", handleDisconnect);
       socket.off("connect_error", handleConnectError);
@@ -299,7 +288,6 @@ export const NotificationProvider = ({ children }) => {
     try {
       await DeleteAllReadNotificationByIdCallApi();
     } catch (error) {
-      console.log("Failed to delete read notifications", error);
       throw error;
     }
   };
@@ -308,7 +296,7 @@ export const NotificationProvider = ({ children }) => {
     try {
       await DeleteAllNotificationByIdCallApi();
     } catch (error) {
-      console.log("Failed to delete all notifications", error);
+      console.error("Failed to delete all notifications", error);
       throw error;
     }
   };
@@ -337,7 +325,6 @@ export const NotificationProvider = ({ children }) => {
 
   // ✅ Manual socket reconnection function
   const reconnectSocket = () => {
-    console.log("🔄 Manually reconnecting socket...");
     socket.disconnect();
     socket.connect();
   };

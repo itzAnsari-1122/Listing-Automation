@@ -17,7 +17,6 @@ export const AsinProvider = ({ children }) => {
   const [asinLoading, setAsinLoading] = useState(false);
   const [allAsins, setAllAsins] = useState([]);
   const [asinPagination, setAsinPagination] = useState({});
-  console.log("asinPagination in AsinProvider:", asinPagination);
   const getAllAsinsService = async ({
     page = 0,
     pageSize = 10,

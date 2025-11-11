@@ -165,8 +165,6 @@ export const JobConfigProvider = ({ children }) => {
           payload?.searchRegionType ?? jobConfig?.searchRegionType ?? [],
       };
 
-      console.log("🚀 Sending payload to API:", formattedPayload);
-
       const { data } = await jobConfigUpdateCallApi(formattedPayload);
       setJobConfig(data);
       themeToast?.success("✅ Job configuration updated successfully!");

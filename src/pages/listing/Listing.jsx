@@ -37,7 +37,6 @@ const Listing = () => {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [syncing, setSyncing] = useState(false);
-  console.log(listing, "listingdata");
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -487,8 +486,6 @@ const Listing = () => {
                 setSelectedCountries(values);
 
                 const codes = payload.map((p) => p.code);
-                console.log("Selected market IDs:", values);
-                console.log("Selected country codes:", codes);
               }}
               options={CountryOptions}
               placeholder="Select countries"
