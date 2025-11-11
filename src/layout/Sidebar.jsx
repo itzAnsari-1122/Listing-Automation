@@ -1,4 +1,3 @@
-import React from "react";
 import { FaChevronLeft, FaChevronRight, FaSignOutAlt } from "react-icons/fa";
 import { HiOutlineViewList } from "react-icons/hi";
 import { PiUserSwitch } from "react-icons/pi";
@@ -89,7 +88,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                   style={{ borderRadius: "9999px", objectFit: "cover" }}
                 />
               </div>
-              {/* Removed the text label as requested - only icon shown */}
             </div>
 
             <button

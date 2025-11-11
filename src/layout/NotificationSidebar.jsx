@@ -126,18 +126,15 @@ export default function NotificationSidebar({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [filtersAnchorEl, setFiltersAnchorEl] = useState(null);
 
-  // Track if we're interacting with filter elements
   const [isInteractingWithFilters, setIsInteractingWithFilters] =
     useState(false);
 
-  // Responsive width calculation
   const sidebarWidth = useMemo(() => {
     if (isMobile) return "100vw";
     if (isTablet) return "380px";
     return "400px";
   }, [isMobile, isTablet]);
 
-  // Responsive positioning for mobile
   const sidebarPosition = useMemo(() => {
     if (isMobile) return "0";
     return "0";
@@ -153,7 +150,6 @@ export default function NotificationSidebar({
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      // Don't close sidebar if clicking on filter elements
       if (isInteractingWithFilters) {
         setIsInteractingWithFilters(false);
         return;
@@ -379,13 +375,11 @@ export default function NotificationSidebar({
 
   const shownCount = locallyFiltered.length;
 
-  // Handle filter interactions
   const handleFilterInteractionStart = () => {
     setIsInteractingWithFilters(true);
   };
 
   const handleFilterInteractionEnd = () => {
-    // Small delay to ensure click events are processed
     setTimeout(() => {
       setIsInteractingWithFilters(false);
     }, 100);
@@ -405,7 +399,6 @@ export default function NotificationSidebar({
       }}
       aria-label="Notifications sidebar"
     >
-      {/* Header Section */}
       <div className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -469,7 +462,6 @@ export default function NotificationSidebar({
           </div>
         </div>
 
-        {/* Stats and Actions */}
         <Box
           sx={{
             display: "flex",
@@ -558,7 +550,6 @@ export default function NotificationSidebar({
           </Box>
         </Box>
 
-        {/* Country Filter */}
         <Box sx={{ mt: 1 }} onClick={handleFilterInteractionStart}>
           <ThemeSelectField
             countriesFlags
@@ -588,7 +579,6 @@ export default function NotificationSidebar({
           />
         </Box>
 
-        {/* Search and Filters */}
         <Box
           sx={{ mt: 1, display: "flex", gap: 1 }}
           onClick={handleFilterInteractionStart}
@@ -636,7 +626,6 @@ export default function NotificationSidebar({
             )}
           </Paper>
 
-          {/* Filters Button */}
           <ThemeButton
             buttonType="icon"
             variant="outline"
@@ -658,7 +647,6 @@ export default function NotificationSidebar({
             <FiFilter size={14} />
           </ThemeButton>
 
-          {/* Filters Dropdown Menu */}
           <Menu
             anchorEl={filtersAnchorEl}
             open={Boolean(filtersAnchorEl)}
@@ -780,7 +768,6 @@ export default function NotificationSidebar({
         </Box>
       </div>
 
-      {/* Active Filters Display */}
       <div className="sticky top-[118px] z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1">
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap items-center gap-1">
@@ -881,14 +868,12 @@ export default function NotificationSidebar({
         </div>
       </div>
 
-      {/* Notifications List */}
       <div
         className="h-[calc(100%-180px)] space-y-3 overflow-y-auto scroll-smooth p-3"
         onScroll={handleScroll}
         role="list"
         aria-label="Notification list"
       >
-        {/* Initial loading */}
         {state.loading && !state.data.length && (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
@@ -901,7 +886,6 @@ export default function NotificationSidebar({
           </div>
         )}
 
-        {/* No results */}
         {!state.loading && locallyFiltered.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center py-16 text-center text-gray-400">
             <div className="mb-3 text-5xl">🔔</div>
@@ -912,7 +896,6 @@ export default function NotificationSidebar({
           </div>
         )}
 
-        {/* Notifications list */}
         {!state.loading && locallyFiltered.length > 0 && (
           <>
             {Object.entries(grouped).map(([label, items]) => {
@@ -1117,7 +1100,6 @@ export default function NotificationSidebar({
               );
             })}
 
-            {/* Scroll loading indicator */}
             {(isLoadingMore || state.loading) && (
               <div className="z-100 flex justify-center py-4">
                 <CircularProgress size={24} />
@@ -1130,7 +1112,6 @@ export default function NotificationSidebar({
               </div>
             )}
 
-            {/* No more data indicator */}
             {!state.hasMore && state.data.length > 0 && (
               <div className=" z-100 flex justify-center py-4">
                 <Typography
@@ -1146,7 +1127,6 @@ export default function NotificationSidebar({
         )}
       </div>
 
-      {/* Footer */}
       <div className="sticky bottom-0 z-10 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-[10px] text-[var(--color-muted)]">
         <div className="flex items-center justify-between">
           <span>
