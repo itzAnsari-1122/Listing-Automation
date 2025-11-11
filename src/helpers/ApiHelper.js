@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const APIBaseURL = import.meta.env.API_BASE_URL || "http://localhost:8080";
+const APIBaseURL =
+  import.meta.env.VITE_API_BASE_URL || "https://localhost:8080";
 
 // ✅ Create Axios instance
 const axiosApi = axios.create({
@@ -48,6 +49,7 @@ export async function makeAPICall(
       params,
       headers: {
         "Content-Type": contentType,
+        "ngrok-skip-browser-warning": "true",
         ...(config.headers || {}),
       },
       ...config,
