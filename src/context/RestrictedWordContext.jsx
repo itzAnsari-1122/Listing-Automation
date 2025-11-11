@@ -95,6 +95,7 @@ export const RestrictedWordProvider = ({ children }) => {
       const result = await UploadRestrictedCsvCallApi(file);
       await getAllRestrictedWordsService();
       themeToast.success("CSV uploaded successfully!");
+      console.log(result, "result");
       return result;
     } catch (error) {
       console.error("Failed to upload CSV:", error);
