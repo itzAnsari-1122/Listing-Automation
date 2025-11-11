@@ -32,8 +32,8 @@ import { useNavigate } from "react-router-dom";
 import { CountryOptions } from "../utils";
 import ThemeLoader from "../components/ui/ThemeLoader";
 import ThemeButton from "../components/ui/ThemeButton";
-import { useNotification } from "../context/Notificationcontext";
 import ThemeSelectField from "../components/ui/ThemeSelectField";
+import { useNotification } from "../context/NotificationContext";
 
 const timeAgo = (date) => {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -181,17 +181,13 @@ export default function NotificationSidebar({
       if (n?.asin && n?.marketplaceId) {
         navigate(`/listing/${n?.asin}?id=${n?.marketplaceId}`);
       }
-    } catch (err) {
-      console.error(err?.message || err);
-    }
+    } catch (err) {}
   };
 
   const handleMarkAllRead = async () => {
     try {
       await markAllAsRead();
-    } catch (err) {
-      console.error("Failed to mark all as read:", err);
-    }
+    } catch (err) {}
   };
 
   const handleRefresh = async () => {
@@ -228,7 +224,6 @@ export default function NotificationSidebar({
         selectedCountries,
       );
     } catch (err) {
-      console.error("Failed to delete read notifications:", err);
     } finally {
       setLastRefreshedAt(Date.now());
     }
@@ -252,7 +247,6 @@ export default function NotificationSidebar({
         selectedCountries,
       );
     } catch (err) {
-      console.error("Failed to delete all notifications:", err);
     } finally {
       setLastRefreshedAt(Date.now());
     }
@@ -318,9 +312,7 @@ export default function NotificationSidebar({
     if (unread.length === 0) return;
     try {
       await Promise.all(unread.map((n) => markAsReadById(n._id)));
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   };
 
   const shownCount = locallyFiltered.length;
@@ -484,7 +476,6 @@ export default function NotificationSidebar({
               const marketplaceIds = payload.map(
                 (p) => p.marketplaceId || p.value,
               );
-              console.log("Selected marketplace IDs:", marketplaceIds);
             }}
             sx={{
               borderRadius: "40px",
@@ -873,9 +864,7 @@ export default function NotificationSidebar({
                                 e.stopPropagation();
                                 try {
                                   await markAsReadById(n?._id);
-                                } catch (err) {
-                                  console.error(err);
-                                }
+                                } catch (err) {}
                               }}
                               sx={{ position: "absolute", top: 6, right: 22 }}
                               aria-label="mark notification as read"

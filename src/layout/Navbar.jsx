@@ -54,9 +54,7 @@ export default function Navbar({ sidebarOpen, setSidebarVisible }) {
     if (notification?.status === "unread" && notification?._id) {
       try {
         await markAsReadById(notification._id);
-      } catch (err) {
-        console.error("Failed to mark notification as read:", err);
-      }
+      } catch (err) {}
     }
 
     navigate(

@@ -18,9 +18,7 @@ const emit = (fn, payload) =>
   listeners.forEach((cb) => {
     try {
       cb(fn, payload);
-    } catch (e) {
-      console.error("ThemeToaster listener error:", e);
-    }
+    } catch (e) {}
   });
 
 /* queue for pushes that happen before toaster mounts */

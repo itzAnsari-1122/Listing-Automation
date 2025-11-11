@@ -74,7 +74,6 @@ const JobConfig = () => {
 
       setRegionData(regionSetup);
     } catch (error) {
-      console.error("Failed to load job config:", error);
       setApiError(error.message || "Failed to load configuration");
       initializeWithDefaults();
     }

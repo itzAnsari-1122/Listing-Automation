@@ -17,7 +17,7 @@ export const AsinProvider = ({ children }) => {
   const [asinLoading, setAsinLoading] = useState(false);
   const [allAsins, setAllAsins] = useState([]);
   const [asinPagination, setAsinPagination] = useState({});
-  console.log("asinPagination in AsinProvider:", asinPagination);
+
   const getAllAsinsService = async ({
     page = 0,
     pageSize = 10,
@@ -32,7 +32,6 @@ export const AsinProvider = ({ children }) => {
       themeToast.success("ASINs fetched successfully!");
       return list;
     } catch (error) {
-      console.error("Failed to get ASINs", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch ASINs",
       );

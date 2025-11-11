@@ -24,10 +24,8 @@ export const ListingProvider = ({ children }) => {
       setListingLoading(true);
       const data = await ListingCallApi(payload);
       setListing(data);
-      console.log("✅ Listing Service Data from Context:", data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch listing",
       );
@@ -40,10 +38,8 @@ export const ListingProvider = ({ children }) => {
     try {
       setListingLoading(true);
       const response = await EditListingCallApi(asin, payload, marketplaceIds);
-      console.log("✅ Listing Edited:", response);
       return response;
     } catch (error) {
-      console.error("❌ Edit Listing failed:", error);
       throw error;
     } finally {
       setListingLoading(false);
@@ -54,10 +50,8 @@ export const ListingProvider = ({ children }) => {
       setListingFlaggedLoading(true);
       const data = await ListingFlaggedCallApi(payload);
       setListingFlagged(data);
-      console.log("✅ Listing Service Data from Context:", data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       throw error;
     } finally {
       setListingFlaggedLoading(false);
@@ -68,10 +62,8 @@ export const ListingProvider = ({ children }) => {
       setListingDetailLoading(true);
       const data = await ListingDetailCallApi(payload);
       setListingDetail(data);
-      console.log("✅ Listing Service Data from Context:", data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       throw error;
     } finally {
       setListingDetailLoading(false);
@@ -82,7 +74,6 @@ export const ListingProvider = ({ children }) => {
       setListingSyncLoading(true);
       await ListingSyncCallApi();
     } catch (error) {
-      console.log("Listing is not sync Successfully");
     } finally {
       setListingSyncLoading(false);
     }

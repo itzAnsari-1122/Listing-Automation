@@ -30,7 +30,6 @@ export const RestrictedWordProvider = ({ children }) => {
       setRestrictedWordPagination(res?.pagination || {});
       return list;
     } catch (error) {
-      console.error("Failed to fetch restricted words:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch restricted words",
       );
@@ -48,7 +47,6 @@ export const RestrictedWordProvider = ({ children }) => {
       themeToast.success("Restricted word created successfully!");
       return created;
     } catch (error) {
-      console.error("Failed to create restricted word:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to create restricted word",
       );
@@ -66,7 +64,6 @@ export const RestrictedWordProvider = ({ children }) => {
       themeToast.success("Restricted word updated successfully!");
       return updated;
     } catch (error) {
-      console.error("Failed to update restricted word:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to update restricted word",
       );
@@ -82,7 +79,6 @@ export const RestrictedWordProvider = ({ children }) => {
       );
       themeToast.success("Restricted word deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete restricted word:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to delete restricted word",
       );
@@ -97,7 +93,6 @@ export const RestrictedWordProvider = ({ children }) => {
       themeToast.success("CSV uploaded successfully!");
       return result;
     } catch (error) {
-      console.error("Failed to upload CSV:", error);
       themeToast.error(
         error?.response?.data?.message ||
           "Failed to upload restricted words CSV",
@@ -111,7 +106,6 @@ export const RestrictedWordProvider = ({ children }) => {
       await DownloadRestrictedCsvCallApi();
       themeToast.success("CSV downloaded successfully!");
     } catch (error) {
-      console.error("Failed to download CSV:", error);
       themeToast.error(
         error?.response?.data?.message ||
           "Failed to download restricted words CSV",

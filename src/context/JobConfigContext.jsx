@@ -140,7 +140,6 @@ export const JobConfigProvider = ({ children }) => {
       setJobConfig(data);
       return data;
     } catch (error) {
-      console.error("❌ Get job config failed:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch job configuration.",
       );
@@ -165,14 +164,11 @@ export const JobConfigProvider = ({ children }) => {
           payload?.searchRegionType ?? jobConfig?.searchRegionType ?? [],
       };
 
-      console.log("🚀 Sending payload to API:", formattedPayload);
-
       const { data } = await jobConfigUpdateCallApi(formattedPayload);
       setJobConfig(data);
       themeToast?.success("✅ Job configuration updated successfully!");
       return data;
     } catch (error) {
-      console.error("❌ Update job config failed:", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to update job configuration.",
       );

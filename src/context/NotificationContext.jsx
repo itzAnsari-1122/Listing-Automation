@@ -181,7 +181,6 @@ export const NotificationProvider = ({ children }) => {
         };
       });
     } catch (error) {
-      console.error("Error fetching notifications:", error);
       getUnreadNotifications();
       setNotifications((prev) => ({
         ...prev,
@@ -232,8 +231,6 @@ export const NotificationProvider = ({ children }) => {
 
       return res;
     } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-
       // ✅ Show error message if themeToast exists
       if (typeof themeToast !== "undefined" && themeToast.error) {
         themeToast.error(
@@ -272,8 +269,6 @@ export const NotificationProvider = ({ children }) => {
 
       return res;
     } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-
       // ✅ Show error message if themeToast exists
       if (typeof themeToast !== "undefined" && themeToast.error) {
         themeToast.error(
@@ -290,16 +285,13 @@ export const NotificationProvider = ({ children }) => {
     try {
       const res = await UnreadNotificationsCAllApi();
       setUnReadNotifications(res.data || []);
-    } catch (error) {
-      console.error("Error fetching unread notifications:", error);
-    }
+    } catch (error) {}
   };
 
   const deleteReadNotificationService = async () => {
     try {
       await DeleteAllReadNotificationByIdCallApi();
     } catch (error) {
-      console.log("Failed to delete read notifications", error);
       throw error;
     }
   };
@@ -308,7 +300,6 @@ export const NotificationProvider = ({ children }) => {
     try {
       await DeleteAllNotificationByIdCallApi();
     } catch (error) {
-      console.log("Failed to delete all notifications", error);
       throw error;
     }
   };

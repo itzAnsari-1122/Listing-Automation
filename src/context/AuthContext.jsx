@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
       navigate("/listing", { replace: true });
       return { data, token };
     } catch (error) {
-      console.error("Login failed", error);
       themeToast.error(error?.response?.data?.message || "Login failed");
     } finally {
       setRefreshLoading(false);
@@ -51,7 +50,6 @@ export const AuthProvider = ({ children }) => {
       // setUser(data);
       return data;
     } catch (error) {
-      console.error("Get profile failed", error);
       themeToast.error(
         error?.response?.data?.message ||
           "Session expired. Please log in again.",
@@ -68,7 +66,6 @@ export const AuthProvider = ({ children }) => {
       setAllUsers(data);
       return data;
     } catch (error) {
-      console.error("Get all users failed", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch users",
       );
@@ -88,7 +85,6 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: response.data };
     } catch (error) {
-      console.error("Register failed", error);
       themeToast.error(error?.response?.data?.message || "Register failed");
     } finally {
       setUserLoading(false);
@@ -106,7 +102,6 @@ export const AuthProvider = ({ children }) => {
       }
       return res;
     } catch (error) {
-      console.error("Edit profile failed", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to update profile",
       );
@@ -126,7 +121,6 @@ export const AuthProvider = ({ children }) => {
       }
       return res;
     } catch (error) {
-      console.error("Change password failed", error);
       themeToast.error(
         error?.response?.data?.message || "Change password failed",
       );
@@ -146,7 +140,6 @@ export const AuthProvider = ({ children }) => {
       }
       return res;
     } catch (error) {
-      console.error("Failed to delete account", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to delete account",
       );
