@@ -8,7 +8,7 @@ import AppRoutes from "./routes/Index";
 import { ThemeToaster } from "./components/ui/ThemeToaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ListingProvider } from "./context/ListingContext";
-import { NotificationProvider } from "./context/Notificationcontext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { AsinProvider } from "./context/AsinContext";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
 import JobConfigProvider from "./context/JobConfigContext";

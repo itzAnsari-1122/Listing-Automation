@@ -42,15 +42,16 @@ export const editProfileCallApi = (id, data) =>
     option: { method: "put", url: `${EDIT_PROFILE}?id=${id}` },
     data,
   });
-export const changePasswordCallApi = (payload) =>
-  makeAPICall({
-    option: { method: "post", url: CHANGE_PASSWORD },
-    data: payload,
-  });
+
 export const deleteAccountCallApi = (data) =>
   makeAPICall({
     option: { method: "delete", url: `${DELETE_ACCOUNT}` },
     data,
+  });
+export const changePasswordCallApi = (payload) =>
+  makeAPICall({
+    option: { method: "post", url: CHANGE_PASSWORD },
+    data: payload,
   });
 export const usersCallApi = () =>
   makeAPICall({ option: { method: "get", url: ALL_USERS } });
@@ -115,12 +116,11 @@ export const NotificationMarkAllAsReadCallApi = () =>
       url: `${NOTIFICATION}/read/all`,
     },
   });
-export const UnreadNotificationsCAllApi = ({ marketplaceIds = [] }) =>
+export const UnreadNotificationsCAllApi = () =>
   makeAPICall({
     option: {
-      method: "post",
+      method: "get",
       url: `${NOTIFICATION}/unread`,
-      data: marketplaceIds, // Use marketplaceIds
     },
   });
 export const AllAsinCallApi = ({ page = 1, pageSize = 10, search = "" }) =>

@@ -29,7 +29,6 @@ export const AsinProvider = ({ children }) => {
       const list = Array.isArray(res) ? res : (res?.data ?? []);
       setAllAsins(list);
       setAsinPagination(res?.pagination || {});
-      themeToast.success("ASINs fetched successfully!");
       return list;
     } catch (error) {
       themeToast.error(
