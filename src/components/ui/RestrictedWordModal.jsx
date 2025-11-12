@@ -17,9 +17,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import { X, Plus, Edit, Trash, Download, Save, XCircle } from "lucide-react";
-import ThemeTextField from "../Ui/ThemeTextField";
-import ThemeButton from "../Ui/ThemeButton";
-import ThemeLoader from "../Ui/ThemeLoader";
+import ThemeTextField from "../ui/ThemeTextField";
+import ThemeButton from "../ui/ThemeButton";
+import ThemeLoader from "../ui/ThemeLoader";
 import { FaTimes } from "react-icons/fa";
 import { useRestrictedWord } from "../../context/RestrictedWordContext";
 import CustomTable from "./CustomTable"; // <-- adjust path if needed

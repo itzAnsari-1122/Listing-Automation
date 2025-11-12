@@ -2,16 +2,16 @@ import { DollarSign, Package, Star, Upload, Search, X } from "lucide-react";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiFileList3Fill } from "react-icons/ri";
 import { useListing } from "../../context/ListingContext";
-import CustomTable from "../../components/Ui/CustomTable";
-import ThemeSelectField from "../../components/Ui/ThemeSelectField";
-import ThemeButton from "../../components/Ui/ThemeButton";
+import CustomTable from "../../components/ui/CustomTable";
+import ThemeSelectField from "../../components/ui/ThemeSelectField";
+import ThemeButton from "../../components/ui/ThemeButton";
 import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
-import AsinModal from "../../components/Ui/AsinModal";
-import AddAsinModal from "../../components/Ui/AsinAddModel";
-import RestrictedWordModal from "../../components/Ui/RestrictedWordModal";
-import AddRestrictedWordModal from "../../components/Ui/AddRestrictedWordModal";
+import AsinModal from "../../components/ui/AsinModal";
+import AddAsinModal from "../../components/ui/AsinAddModel";
+import RestrictedWordModal from "../../components/ui/RestrictedWordModal";
+import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { CountryOptions } from "../../utils";
 import {
   FiAlertTriangle,
@@ -35,8 +35,6 @@ const Listing = () => {
   const [rowsPerPage, setRowsPerPage] = useState(listing?.count || 10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [syncing, setSyncing] = useState(false);
-  console.log(listing, "listingdata");
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -356,11 +354,6 @@ const Listing = () => {
             onClick={() => {
               if (row?.asin && row?.marketplaceId) {
                 navigate(`/listing/${row.asin}?id=${row.marketplaceId}`);
-              } else {
-                console.warn(
-                  "Missing asin or marketplaceId for navigation: ",
-                  row,
-                );
               }
             }}
             sx={{
@@ -582,8 +575,6 @@ const Listing = () => {
 
                 const codes = payload.map((p) => p.code);
                 // if you need ISO country codes for something else:
-                console.log("Selected market IDs:", values);
-                console.log("Selected country codes:", codes);
               }}
               options={CountryOptions}
               placeholder="Select countries"

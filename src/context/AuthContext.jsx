@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { loginCallApi, getProfileCallApi } from "../helpers/BackendHelper";
 import { useNavigate } from "react-router-dom";
-import ThemeLoader from "../components/Ui/ThemeLoader";
-import { themeToast } from "../components/Ui/ThemeToaster";
+import ThemeLoader from "../components/ui/ThemeLoader";
+import { themeToast } from "../components/ui/ThemeToaster";
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [userLoading, setUserLoading] = useState(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-
   const navigate = useNavigate();
 
   // ✅ LOGIN
@@ -22,9 +21,9 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
       if (token) localStorage.setItem("token", token);
       themeToast.success("Login successful!");
+      navigate("/listing", { replace: true });
       return { data, token };
     } catch (error) {
-      console.error("Login failed", error);
       themeToast.error(error?.response?.data?.message || "Login failed");
     } finally {
       setRefreshLoading(false);
@@ -39,7 +38,6 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
       return data;
     } catch (error) {
-      console.error("Get profile failed", error);
       themeToast.error(
         error?.response?.data?.message ||
           "Session expired. Please log in again.",

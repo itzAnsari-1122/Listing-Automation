@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { FaCamera } from "react-icons/fa";
 import Chip from "@mui/material/Chip";
-import ThemeChip from "../../components/Ui/ThemeChip";
+import ThemeChip from "../../components/ui/ThemeChip";
 
 function Profile() {
   const { user } = useAuth();

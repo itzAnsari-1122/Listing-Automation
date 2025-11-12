@@ -1,14 +1,12 @@
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import ThemeLoader from "../components/Ui/ThemeLoader";
+import Login from "../pages/auth/Login";
 import MainLayout from "../layout/MainLayout";
-import Login from "../pages/Auth/Login";
-import ComingSoon from "../pages/ComingSoon/ComingSoon";
+import ComingSoon from "../pages/comingSoon/ComingSoon";
+import ThemeLoader from "../components/ui/ThemeLoader";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
-  console.log(user, "user");
   if (refreshLoading) {
     return <ThemeLoader type="fullpage" message="Authenticating..." />;
   }
@@ -112,14 +110,7 @@ export default function AppRoutes() {
               </MainLayout>
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <MainLayout>
-                <ComingSoon />
-              </MainLayout>
-            }
-          />
+
           <Route path="*" element={<Navigate to="/listing" replace />} />
         </>
       )}

@@ -1,6 +1,6 @@
 import React from "react";
 import { RiRocketFill } from "react-icons/ri";
-import ThemeButton from "../../components/Ui/ThemeButton";
+import ThemeButton from "../../components/ui/ThemeButton";
 
 const ComingSoon = () => {
   return (
@@ -20,14 +20,6 @@ const ComingSoon = () => {
         We’re working hard to bring you something amazing. This feature isn’t
         ready yet, but it’s on the way!
       </p>
-      <ThemeButton
-        size="md"
-        tone="primary"
-        variant="contained"
-        onClick={() => window.history.back()}
-      >
-        Go Back
-      </ThemeButton>
     </div>
   );
 };
