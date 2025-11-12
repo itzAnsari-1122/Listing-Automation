@@ -9,14 +9,13 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-
-import ThemeSelectField from "../components/ui/ThemeSelectField";
-import { PiUserSwitch } from "react-icons/pi";
 import {
+  useJobConfig,
   COUNTRIES_BY_REGION,
   REGION_TYPES,
-  useJobConfig,
 } from "../context/JobConfigContext";
+import ThemeSelectField from "../components/ui/ThemeSelectField";
+import { PiUserSwitch } from "react-icons/pi";
 
 const JobConfig = () => {
   const {
@@ -75,7 +74,6 @@ const JobConfig = () => {
 
       setRegionData(regionSetup);
     } catch (error) {
-      console.error("Failed to load job config:", error);
       setApiError(error.message || "Failed to load configuration");
       initializeWithDefaults();
     }

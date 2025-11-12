@@ -219,8 +219,6 @@ function ListingReport() {
                   const asin = encodeURIComponent(row.asin);
                   const mk = encodeURIComponent(row.marketplaceId);
                   navigate(`/listing/${asin}?id=${mk}`);
-                } else {
-                  console.warn("Missing asin or marketplaceId:", row);
                 }
               }}
               sx={{

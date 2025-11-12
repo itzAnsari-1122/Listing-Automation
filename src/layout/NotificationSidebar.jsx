@@ -13,6 +13,7 @@ import {
   FiRefreshCw,
   FiSearch,
   FiTrash2,
+  FiChevronDown,
 } from "react-icons/fi";
 import {
   Badge,
@@ -26,14 +27,20 @@ import {
   Skeleton,
   Tooltip,
   Typography,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import ThemeButton from "../components/ui/ThemeButton";
 import ThemeChip from "../components/ui/ThemeChip";
 import { useNavigate } from "react-router-dom";
-import { useNotification } from "../context/NotificationContext";
-import ThemeSelectField from "../components/ui/ThemeSelectField";
 import { CountryOptions } from "../utils";
 import ThemeLoader from "../components/ui/ThemeLoader";
+import ThemeButton from "../components/ui/ThemeButton";
+import { useNotification } from "../context/NotificationContext";
+import ThemeSelectField from "../components/ui/ThemeSelectField";
 
 const timeAgo = (date) => {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -81,6 +88,10 @@ export default function NotificationSidebar({
 }) {
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   const {
     notifications,
     fetchNotifications,
@@ -113,6 +124,21 @@ export default function NotificationSidebar({
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [filtersAnchorEl, setFiltersAnchorEl] = useState(null);
+
+  const [isInteractingWithFilters, setIsInteractingWithFilters] =
+    useState(false);
+
+  const sidebarWidth = useMemo(() => {
+    if (isMobile) return "100vw";
+    if (isTablet) return "380px";
+    return "400px";
+  }, [isMobile, isTablet]);
+
+  const sidebarPosition = useMemo(() => {
+    if (isMobile) return "0";
+    return "0";
+  }, [isMobile]);
 
   useEffect(() => {
     const id = setTimeout(
@@ -124,6 +150,11 @@ export default function NotificationSidebar({
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
+      if (isInteractingWithFilters) {
+        setIsInteractingWithFilters(false);
+        return;
+      }
+
       if (
         sidebarVisible &&
         sidebarRef.current &&
@@ -132,16 +163,19 @@ export default function NotificationSidebar({
         setSidebarVisible(false);
       }
     };
+
     const handleEsc = (e) => {
       if (e.key === "Escape" && sidebarVisible) setSidebarVisible(false);
     };
+
     document.addEventListener("mousedown", handleOutsideClick);
     document.addEventListener("keydown", handleEsc);
+
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEsc);
     };
-  }, [sidebarVisible, setSidebarVisible]);
+  }, [sidebarVisible, setSidebarVisible, isInteractingWithFilters]);
 
   useEffect(() => {
     const initialPageSize = 10;
@@ -181,17 +215,13 @@ export default function NotificationSidebar({
       if (n?.asin && n?.marketplaceId) {
         navigate(`/listing/${n?.asin}?id=${n?.marketplaceId}`);
       }
-    } catch (err) {
-      console.error(err?.message || err);
-    }
+    } catch (err) {}
   };
 
   const handleMarkAllRead = async () => {
     try {
       await markAllAsRead();
-    } catch (err) {
-      console.error("Failed to mark all as read:", err);
-    }
+    } catch (err) {}
   };
 
   const handleRefresh = async () => {
@@ -228,7 +258,6 @@ export default function NotificationSidebar({
         selectedCountries,
       );
     } catch (err) {
-      console.error("Failed to delete read notifications:", err);
     } finally {
       setLastRefreshedAt(Date.now());
     }
@@ -252,11 +281,34 @@ export default function NotificationSidebar({
         selectedCountries,
       );
     } catch (err) {
-      console.error("Failed to delete all notifications:", err);
     } finally {
       setLastRefreshedAt(Date.now());
     }
   };
+
+  const handleFilterSelect = useCallback((filterType, value) => {
+    switch (filterType) {
+      case "status":
+        setStatusFilter(value);
+        break;
+      case "type":
+        setTypeFilter(value);
+        break;
+      case "sort":
+        setSortOrder(value);
+        break;
+      case "clear":
+        setStatusFilter("all");
+        setTypeFilter("all");
+        setResolvedFilter("all");
+        setSortOrder("desc");
+        setQuery("");
+        break;
+      default:
+        break;
+    }
+    setFiltersAnchorEl(null);
+  }, []);
 
   const totalNotifications =
     state?.totalItems ?? state?.total ?? state?.data?.length ?? 0;
@@ -318,26 +370,35 @@ export default function NotificationSidebar({
     if (unread.length === 0) return;
     try {
       await Promise.all(unread.map((n) => markAsReadById(n._id)));
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   };
 
   const shownCount = locallyFiltered.length;
 
+  const handleFilterInteractionStart = () => {
+    setIsInteractingWithFilters(true);
+  };
+
+  const handleFilterInteractionEnd = () => {
+    setTimeout(() => {
+      setIsInteractingWithFilters(false);
+    }, 100);
+  };
+
   return (
     <div
       ref={sidebarRef}
-      className={`fixed right-0 top-0 z-10 h-full w-[400px] transform bg-[var(--color-surface)] shadow-2xl transition-transform duration-300 ${
+      className={`fixed right-0 top-0 z-50 h-full transform bg-[var(--color-surface)] shadow-2xl transition-transform duration-300 ${
         sidebarVisible ? "translate-x-0" : "translate-x-full"
       }`}
       style={{
-        borderLeft: "1px solid var(--color-border)",
+        width: sidebarWidth,
+        left: isMobile ? "0" : "auto",
+        borderLeft: isMobile ? "none" : "1px solid var(--color-border)",
         boxShadow: "0 16px 48px rgba(0,0,0,0.28)",
       }}
       aria-label="Notifications sidebar"
     >
-      {/* Header Section - Made more compact */}
       <div className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -370,22 +431,24 @@ export default function NotificationSidebar({
                 <FiRefreshCw size={14} />
               </IconButton>
             </Tooltip>
-            <Tooltip
-              title={totalUnread > 0 ? "Mark all as read" : "All caught up!"}
-            >
-              <span>
-                <ThemeButton
-                  onClick={handleMarkAllRead}
-                  variant="outline"
-                  textColor={totalUnread > 0 ? "#3B82F6" : "#9CA3AF"}
-                  borderRadius="9999px"
-                  size="sm"
-                  disabled={totalUnread === 0}
-                >
-                  Mark all
-                </ThemeButton>
-              </span>
-            </Tooltip>
+            {!isMobile && (
+              <Tooltip
+                title={totalUnread > 0 ? "Mark all as read" : "All caught up!"}
+              >
+                <span>
+                  <ThemeButton
+                    onClick={handleMarkAllRead}
+                    variant="outline"
+                    textColor={totalUnread > 0 ? "#3B82F6" : "#9CA3AF"}
+                    borderRadius="9999px"
+                    size="sm"
+                    disabled={totalUnread === 0}
+                  >
+                    Mark all
+                  </ThemeButton>
+                </span>
+              </Tooltip>
+            )}
 
             <Tooltip title="Close">
               <IconButton
@@ -399,7 +462,6 @@ export default function NotificationSidebar({
           </div>
         </div>
 
-        {/* Stats and Actions - Made more compact */}
         <Box
           sx={{
             display: "flex",
@@ -409,7 +471,7 @@ export default function NotificationSidebar({
             pt: 1,
           }}
         >
-          <Box sx={{ display: "flex", gap: 0.5 }}>
+          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
             <ThemeChip
               label={`Total: ${totalNotifications}`}
               tone="primary"
@@ -437,7 +499,7 @@ export default function NotificationSidebar({
             <Tooltip title="Delete read notifications">
               <span>
                 <ThemeButton
-                  buttonType="icon"
+                  buttonType={isMobile ? "icon" : "default"}
                   variant="outline"
                   tone="neutral"
                   aria-label="Delete read notifications"
@@ -447,8 +509,16 @@ export default function NotificationSidebar({
                   }
                   title="Delete read notifications"
                   size="sm"
+                  startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
+                  sx={{
+                    borderRadius: "9999px",
+                    fontSize: "0.7rem",
+                    height: "24px",
+                    px: isMobile ? 0.5 : 1,
+                    minWidth: isMobile ? "32px" : "auto",
+                  }}
                 >
-                  <FiTrash2 size={12} />
+                  {isMobile ? <FiTrash2 size={12} /> : "Read"}
                 </ThemeButton>
               </span>
             </Tooltip>
@@ -456,7 +526,7 @@ export default function NotificationSidebar({
             <Tooltip title="Delete all notifications">
               <span>
                 <ThemeButton
-                  buttonType="icon"
+                  buttonType={isMobile ? "icon" : "default"}
                   variant="outline"
                   tone="danger"
                   aria-label="Delete all notifications"
@@ -464,16 +534,23 @@ export default function NotificationSidebar({
                   disabled={(totalNotifications || 0) === 0}
                   title="Delete all notifications"
                   size="sm"
+                  startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
+                  sx={{
+                    borderRadius: "9999px",
+                    fontSize: "0.7rem",
+                    height: "24px",
+                    px: isMobile ? 0.5 : 1,
+                    minWidth: isMobile ? "32px" : "auto",
+                  }}
                 >
-                  <FiTrash2 size={12} />
+                  {isMobile ? <FiTrash2 size={12} /> : "All"}
                 </ThemeButton>
               </span>
             </Tooltip>
           </Box>
         </Box>
 
-        {/* Country Filter - Made more compact */}
-        <Box sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }} onClick={handleFilterInteractionStart}>
           <ThemeSelectField
             countriesFlags
             name="countryFilter"
@@ -485,6 +562,8 @@ export default function NotificationSidebar({
                 (p) => p.marketplaceId || p.value,
               );
             }}
+            onOpen={() => handleFilterInteractionStart()}
+            onClose={() => handleFilterInteractionEnd()}
             sx={{
               borderRadius: "40px",
               "& .MuiInputBase-root": {
@@ -499,8 +578,10 @@ export default function NotificationSidebar({
           />
         </Box>
 
-        {/* Search - Made more compact */}
-        <Box sx={{ mt: 1 }}>
+        <Box
+          sx={{ mt: 1, display: "flex", gap: 1 }}
+          onClick={handleFilterInteractionStart}
+        >
           <Paper
             variant="outlined"
             sx={{
@@ -510,6 +591,8 @@ export default function NotificationSidebar({
               alignItems: "center",
               borderRadius: "9999px",
               height: "32px",
+              flex: 1,
+              minWidth: 0,
             }}
           >
             <FiSearch className="mx-1 opacity-70" size={14} />
@@ -518,6 +601,8 @@ export default function NotificationSidebar({
               inputProps={{ "aria-label": "Search notifications" }}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onFocus={handleFilterInteractionStart}
+              onBlur={handleFilterInteractionEnd}
               sx={{
                 flex: 1,
                 fontSize: "0.8rem",
@@ -529,138 +614,265 @@ export default function NotificationSidebar({
             {query && (
               <IconButton
                 size="small"
-                onClick={() => setQuery("")}
+                onClick={() => {
+                  setQuery("");
+                  handleFilterInteractionEnd();
+                }}
                 aria-label="clear search"
               >
                 <FiX size={14} />
               </IconButton>
             )}
           </Paper>
+
+          <ThemeButton
+            buttonType="icon"
+            variant="outline"
+            tone="neutral"
+            aria-label="Filter options"
+            onClick={(e) => {
+              handleFilterInteractionStart();
+              setFiltersAnchorEl(e.currentTarget);
+            }}
+            title="Filter options"
+            size="sm"
+            sx={{
+              height: "32px",
+              width: "32px",
+              borderRadius: "9999px",
+              flexShrink: 0,
+            }}
+          >
+            <FiFilter size={14} />
+          </ThemeButton>
+
+          <Menu
+            anchorEl={filtersAnchorEl}
+            open={Boolean(filtersAnchorEl)}
+            onClose={() => {
+              setFiltersAnchorEl(null);
+              handleFilterInteractionEnd();
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={handleFilterInteractionStart}
+            PaperProps={{
+              sx: {
+                mt: 1,
+                borderRadius: "12px",
+                minWidth: 160,
+                maxWidth: isMobile ? "280px" : "none",
+                boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+              },
+            }}
+          >
+            <MenuItem
+              disabled
+              sx={{
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: "text.secondary",
+              }}
+            >
+              Status
+            </MenuItem>
+            {["all", "unread", "read"].map((status) => (
+              <MenuItem
+                key={status}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilterSelect("status", status);
+                  handleFilterInteractionEnd();
+                }}
+                selected={statusFilter === status}
+                sx={{ fontSize: "0.8rem" }}
+              >
+                <ListItemText>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </ListItemText>
+                {statusFilter === status && <FiCheck size={14} />}
+              </MenuItem>
+            ))}
+
+            <Divider />
+
+            <MenuItem
+              disabled
+              sx={{
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: "text.secondary",
+              }}
+            >
+              Type
+            </MenuItem>
+            {["all", "success", "error", "info"].map((type) => (
+              <MenuItem
+                key={type}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilterSelect("type", type);
+                  handleFilterInteractionEnd();
+                }}
+                selected={typeFilter === type}
+                sx={{ fontSize: "0.8rem" }}
+              >
+                <ListItemText>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </ListItemText>
+                {typeFilter === type && <FiCheck size={14} />}
+              </MenuItem>
+            ))}
+
+            <Divider />
+
+            <MenuItem
+              disabled
+              sx={{
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: "text.secondary",
+              }}
+            >
+              Sort
+            </MenuItem>
+            <MenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                handleFilterSelect(
+                  "sort",
+                  sortOrder === "desc" ? "asc" : "desc",
+                );
+                handleFilterInteractionEnd();
+              }}
+              sx={{ fontSize: "0.8rem" }}
+            >
+              <ListItemText>
+                {sortOrder === "desc" ? "Newest First" : "Oldest First"}
+              </ListItemText>
+            </MenuItem>
+
+            <Divider />
+
+            <MenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                handleFilterSelect("clear");
+                handleFilterInteractionEnd();
+              }}
+              sx={{ fontSize: "0.8rem", color: "error.main" }}
+            >
+              <ListItemText>Clear All Filters</ListItemText>
+            </MenuItem>
+          </Menu>
         </Box>
       </div>
 
-      {/* Filters Section - Made much more compact */}
-      <div className="sticky top-[118px] z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        {/* Status and Type filters combined in one row */}
-        <div className="flex items-center justify-between px-2 py-1">
-          <div className="flex items-center gap-1">
-            <FiFilter className="opacity-70" size={12} />
+      <div className="sticky top-[118px] z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center gap-1">
             <span className="text-xs font-medium text-gray-500 opacity-80">
-              Filters
+              Active:
             </span>
-          </div>
-
-          <div className="flex items-center gap-0.5">
-            {["all", "unread", "read"].map((tab) => (
+            {statusFilter !== "all" && (
               <ThemeChip
-                key={tab}
                 size="sm"
-                label={tab.charAt(0).toUpperCase() + tab.slice(1)}
-                variant={statusFilter === tab ? "filled" : "outline"}
-                tone={statusFilter === tab ? "primary" : "neutral"}
-                onClick={() => setStatusFilter(tab)}
+                label={`Status: ${statusFilter}`}
+                variant="filled"
+                tone="primary"
+                onDelete={() => {
+                  setStatusFilter("all");
+                  handleFilterInteractionStart();
+                  setTimeout(handleFilterInteractionEnd, 100);
+                }}
                 sx={{
                   borderRadius: "9999px",
                   fontWeight: 600,
                   fontSize: "0.7rem",
-                  height: "24px",
-                  minWidth: "auto",
-                  px: 1,
+                  height: "22px",
                 }}
               />
-            ))}
-          </div>
-        </div>
-
-        <Divider sx={{ my: 0.5 }} />
-
-        {/* Type filters and controls in one row */}
-        <div className="flex items-center justify-between px-2 py-1">
-          <div className="flex items-center gap-0.5">
-            {["all", "success", "error", "info"].map((type) => {
-              const active = typeFilter === type;
-              const tone =
-                type === "all"
-                  ? "primary"
-                  : type === "success"
+            )}
+            {typeFilter !== "all" && (
+              <ThemeChip
+                size="sm"
+                label={`Type: ${typeFilter}`}
+                variant="filled"
+                tone={
+                  typeFilter === "success"
                     ? "success"
-                    : type === "error"
+                    : typeFilter === "error"
                       ? "danger"
-                      : type === "info"
-                        ? "primary"
-                        : "neutral";
-              return (
-                <ThemeChip
-                  key={type}
-                  size="sm"
-                  label={type.charAt(0).toUpperCase() + type.slice(1)}
-                  variant={active ? "filled" : "outline"}
-                  tone={active ? tone : "neutral"}
-                  onClick={() => setTypeFilter(type)}
-                  sx={{
-                    borderRadius: "9999px",
-                    fontWeight: 600,
-                    fontSize: "0.7rem",
-                    height: "24px",
-                    minWidth: "auto",
-                    px: 1,
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-0.5">
-            <ThemeChip
-              size="sm"
-              label={sortOrder === "desc" ? "Newest" : "Oldest"}
-              onClick={() =>
-                setSortOrder((p) => (p === "desc" ? "asc" : "desc"))
-              }
-              variant="outline"
-              tone="neutral"
-              sx={{
-                borderRadius: "9999px",
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                height: "24px",
-                minWidth: "auto",
-                px: 1,
-              }}
-            />
-            <ThemeChip
-              size="sm"
-              label="Clear"
-              onClick={() => {
-                setStatusFilter("all");
-                setTypeFilter("all");
-                setResolvedFilter("all");
-                setSortOrder("desc");
-                setQuery("");
-              }}
-              variant="outline"
-              tone="neutral"
-              sx={{
-                borderRadius: "9999px",
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                height: "24px",
-                minWidth: "auto",
-                px: 1,
-              }}
-            />
+                      : "primary"
+                }
+                onDelete={() => {
+                  setTypeFilter("all");
+                  handleFilterInteractionStart();
+                  setTimeout(handleFilterInteractionEnd, 100);
+                }}
+                sx={{
+                  borderRadius: "9999px",
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  height: "22px",
+                }}
+              />
+            )}
+            {sortOrder !== "desc" && (
+              <ThemeChip
+                size="sm"
+                label="Oldest First"
+                variant="filled"
+                tone="neutral"
+                onDelete={() => {
+                  setSortOrder("desc");
+                  handleFilterInteractionStart();
+                  setTimeout(handleFilterInteractionEnd, 100);
+                }}
+                sx={{
+                  borderRadius: "9999px",
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  height: "22px",
+                }}
+              />
+            )}
+            {query && (
+              <ThemeChip
+                size="sm"
+                label={`Search: ${query}`}
+                variant="filled"
+                tone="warning"
+                onDelete={() => {
+                  setQuery("");
+                  handleFilterInteractionStart();
+                  setTimeout(handleFilterInteractionEnd, 100);
+                }}
+                sx={{
+                  borderRadius: "9999px",
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  height: "22px",
+                }}
+              />
+            )}
+            {statusFilter === "all" &&
+              typeFilter === "all" &&
+              sortOrder === "desc" &&
+              !query && (
+                <span className="text-xs italic text-gray-400">
+                  No filters active
+                </span>
+              )}
           </div>
         </div>
       </div>
 
-      {/* Notifications List - Adjusted height calculation for smaller header */}
       <div
         className="h-[calc(100%-180px)] space-y-3 overflow-y-auto scroll-smooth p-3"
         onScroll={handleScroll}
         role="list"
         aria-label="Notification list"
       >
-        {/* Initial loading */}
         {state.loading && !state.data.length && (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
@@ -673,7 +885,6 @@ export default function NotificationSidebar({
           </div>
         )}
 
-        {/* No results */}
         {!state.loading && locallyFiltered.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center py-16 text-center text-gray-400">
             <div className="mb-3 text-5xl">🔔</div>
@@ -684,7 +895,6 @@ export default function NotificationSidebar({
           </div>
         )}
 
-        {/* Notifications list */}
         {!state.loading && locallyFiltered.length > 0 && (
           <>
             {Object.entries(grouped).map(([label, items]) => {
@@ -872,9 +1082,7 @@ export default function NotificationSidebar({
                                 e.stopPropagation();
                                 try {
                                   await markAsReadById(n?._id);
-                                } catch (err) {
-                                  console.error(err);
-                                }
+                                } catch (err) {}
                               }}
                               sx={{ position: "absolute", top: 6, right: 22 }}
                               aria-label="mark notification as read"
@@ -891,7 +1099,6 @@ export default function NotificationSidebar({
               );
             })}
 
-            {/* Scroll loading indicator */}
             {(isLoadingMore || state.loading) && (
               <div className="z-100 flex justify-center py-4">
                 <CircularProgress size={24} />
@@ -904,7 +1111,6 @@ export default function NotificationSidebar({
               </div>
             )}
 
-            {/* No more data indicator */}
             {!state.hasMore && state.data.length > 0 && (
               <div className=" z-100 flex justify-center py-4">
                 <Typography
@@ -920,7 +1126,6 @@ export default function NotificationSidebar({
         )}
       </div>
 
-      {/* Footer - Made more compact */}
       <div className="sticky bottom-0 z-10 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-[10px] text-[var(--color-muted)]">
         <div className="flex items-center justify-between">
           <span>

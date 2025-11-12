@@ -1,14 +1,14 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Login from "../pages/auth/Login";
-import ListingReport from "../pages/listingReport/ListingReport";
-import Listing from "../pages/listing/Listing";
-import ListingDetail from "../pages/listing/ListingDetail";
-import Profile from "../pages/profile/Profile";
-import Users from "../pages/user/Users";
 import MainLayout from "../layout/MainLayout";
-import JobConfig from "../layout/JobConfig";
+import ComingSoon from "../pages/comingSoon/ComingSoon";
+import ThemeLoader from "../components/ui/ThemeLoader";
+import Users from "../pages/user/Users";
+import Listing from "../pages/listing/Listing";
+import ListingReport from "../pages/listingReport/ListingReport";
 import ListingDetail from "../pages/listing/ListingDetail";
+import JobConfig from "../layout/JobConfig";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
@@ -32,7 +32,7 @@ export default function AppRoutes() {
             path="/listing-report"
             element={
               <MainLayout>
-                <ListingReport />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -40,7 +40,7 @@ export default function AppRoutes() {
             path="/listing/:asin"
             element={
               <MainLayout>
-                <ListingDetail />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -48,7 +48,7 @@ export default function AppRoutes() {
             path="/listing"
             element={
               <MainLayout>
-                <Listing />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -56,7 +56,7 @@ export default function AppRoutes() {
             path="/profile"
             element={
               <MainLayout>
-                <Profile />
+                <ComingSoon />
               </MainLayout>
             }
           />{" "}
@@ -64,7 +64,7 @@ export default function AppRoutes() {
             path="/users"
             element={
               <MainLayout>
-                <Users />
+                <ComingSoon />
               </MainLayout>
             }
           />
@@ -115,14 +115,7 @@ export default function AppRoutes() {
               </MainLayout>
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <MainLayout>
-                <Profile />
-              </MainLayout>
-            }
-          />
+
           <Route path="*" element={<Navigate to="/listing" replace />} />
         </>
       )}

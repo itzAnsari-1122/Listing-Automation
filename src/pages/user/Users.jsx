@@ -656,8 +656,6 @@ function RegisterUserModal({ onClose, registerService, onUserRegistered }) {
         reset();
         onClose();
       }
-    } catch (err) {
-      console.error("Registration error:", err);
     } finally {
       setLoading(false);
     }

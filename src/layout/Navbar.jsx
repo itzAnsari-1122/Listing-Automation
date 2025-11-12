@@ -12,9 +12,8 @@ import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { MdOutlineNotificationsNone } from "react-icons/md";
 import { FiBell } from "react-icons/fi";
 import { useTheme } from "../context/ThemeContext";
-import { useNotification } from "../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
-
+import { useNotification } from "../context/NotificationContext";
 export default function Navbar({ sidebarOpen, setSidebarVisible }) {
   const { theme, toggleTheme } = useTheme();
   const { notifications, markAsReadById, unReadNotification } =
@@ -55,9 +54,7 @@ export default function Navbar({ sidebarOpen, setSidebarVisible }) {
     if (notification?.status === "unread" && notification?._id) {
       try {
         await markAsReadById(notification._id);
-      } catch (err) {
-        console.error("Failed to mark notification as read:", err);
-      }
+      } catch (err) {}
     }
 
     navigate(

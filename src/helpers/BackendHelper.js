@@ -1,8 +1,6 @@
 import { makeAPICall } from "./ApiHelper";
 import {
-  ALL_CATALOGS,
   ALL_USERS,
-  ASIN,
   ASIN_ALL,
   ASIN_CREATE,
   ASIN_DELETE,
@@ -10,28 +8,27 @@ import {
   ASIN_GET,
   ASIN_UPDATE,
   ASIN_UPLOAD_CSV,
+  CHANGE_PASSWORD,
+  DELETE_ACCOUNT,
   EDIT_PROFILE,
-  FLAGGED,
+  JOB_CONFIG,
+  JOB_CONFIG_GET,
+  JOB_CONFIG_UPDATE,
   LISTINGS,
   LISTINGS_DETAIL,
+  LISTINGS_EDIT,
   LISTINGS_FLAGGED,
   LISTINGS_SYNC,
   LOGIN,
   NOTIFICATION,
   PROFILE,
   REGISTER,
-  DELETE_ACCOUNT,
-  CHANGE_PASSWORD,
   RESTRICTED_CREATE,
+  RESTRICTED_DELETE,
+  RESTRICTED_DOWNLOAD_CSV,
   RESTRICTED_GET,
   RESTRICTED_UPDATE,
-  RESTRICTED_DELETE,
   RESTRICTED_UPLOAD_CSV,
-  RESTRICTED_DOWNLOAD_CSV,
-  LISTINGS_EDIT,
-  JOB_CONFIG_GET,
-  JOB_CONFIG_UPDATE,
-  JOB_CONFIG,
 } from "./UrlHelper";
 
 export const loginCallApi = (data) =>
@@ -45,25 +42,36 @@ export const editProfileCallApi = (id, data) =>
     option: { method: "put", url: `${EDIT_PROFILE}?id=${id}` },
     data,
   });
+
 export const deleteAccountCallApi = (data) =>
   makeAPICall({
     option: { method: "delete", url: `${DELETE_ACCOUNT}` },
     data,
   });
+export const changePasswordCallApi = (payload) =>
+  makeAPICall({
+    option: { method: "post", url: CHANGE_PASSWORD },
+    data: payload,
+  });
 export const usersCallApi = () =>
   makeAPICall({ option: { method: "get", url: ALL_USERS } });
-
-export const getAllCatalogsCallApi = ({ page, limit }) =>
+export const EditListingCallApi = (asin, data, marketplaceIds) =>
   makeAPICall({
     option: {
-      method: "get",
-      url: `${ALL_CATALOGS}?page=${page}&limit=${limit}`,
+      method: "put", // Changed from "put" to match your route
+      url: `${LISTINGS_EDIT}/${asin}?marketplaceIds=${marketplaceIds}`,
     },
+    data, // This should be your payload object
   });
-export const CatalogFlaggedCallApi = ({ page = 1, limit = 10 }) =>
-  makeAPICall({
-    option: { method: "get", url: `${FLAGGED}?page=${page}&limit=${limit}` },
-  });
+export const ListingCallApi = (data) =>
+  makeAPICall({ option: { method: "post", url: LISTINGS }, data });
+export const ListingDetailCallApi = (data) =>
+  makeAPICall({ option: { method: "post", url: LISTINGS_DETAIL }, data });
+export const ListingFlaggedCallApi = (data) =>
+  makeAPICall({ option: { method: "post", url: LISTINGS_FLAGGED }, data });
+
+export const ListingSyncCallApi = () =>
+  makeAPICall({ option: { method: "get", url: LISTINGS_SYNC } });
 export const NotificationCallApi = ({
   page = 1,
   limit = 10,
@@ -115,24 +123,6 @@ export const UnreadNotificationsCAllApi = () =>
       url: `${NOTIFICATION}/unread`,
     },
   });
-export const EditListingCallApi = (asin, data, marketplaceIds) =>
-  makeAPICall({
-    option: {
-      method: "put", // Changed from "put" to match your route
-      url: `${LISTINGS_EDIT}/${asin}?marketplaceIds=${marketplaceIds}`,
-    },
-    data, // This should be your payload object
-  });
-export const ListingCallApi = (data) =>
-  makeAPICall({ option: { method: "post", url: LISTINGS }, data });
-export const ListingDetailCallApi = (data) =>
-  makeAPICall({ option: { method: "post", url: LISTINGS_DETAIL }, data });
-export const ListingFlaggedCallApi = (data) =>
-  makeAPICall({ option: { method: "post", url: LISTINGS_FLAGGED }, data });
-
-export const ListingSyncCallApi = () =>
-  makeAPICall({ option: { method: "get", url: LISTINGS_SYNC } });
-
 export const AllAsinCallApi = ({ page = 1, pageSize = 10, search = "" }) =>
   makeAPICall({
     option: {
@@ -207,12 +197,6 @@ export const DownloadAsinCsvCallApi = async () => {
   window.URL.revokeObjectURL(url);
 };
 
-// Change password API
-export const changePasswordCallApi = (payload) =>
-  makeAPICall({
-    option: { method: "post", url: CHANGE_PASSWORD },
-    data: payload,
-  });
 export const AllRestrictedCallApi = ({
   page = 1,
   pageSize = 10,

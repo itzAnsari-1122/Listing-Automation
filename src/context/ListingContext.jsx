@@ -1,18 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
-  loginCallApi,
-  getProfileCallApi,
-  editProfileCallApi,
-  registerCallApi,
-  usersCallApi,
-  NotificationCallApi,
   ListingCallApi,
   ListingFlaggedCallApi,
   ListingDetailCallApi,
   ListingSyncCallApi,
   EditListingCallApi,
 } from "../helpers/BackendHelper";
-import { useNavigate } from "react-router-dom";
 
 const ListingContext = createContext();
 export const useListing = () => useContext(ListingContext);
@@ -33,7 +26,6 @@ export const ListingProvider = ({ children }) => {
       setListing(data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch listing",
       );
@@ -48,7 +40,6 @@ export const ListingProvider = ({ children }) => {
       const response = await EditListingCallApi(asin, payload, marketplaceIds);
       return response;
     } catch (error) {
-      console.error("❌ Edit Listing failed:", error);
       throw error;
     } finally {
       setListingLoading(false);
@@ -61,7 +52,6 @@ export const ListingProvider = ({ children }) => {
       setListingFlagged(data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       throw error;
     } finally {
       setListingFlaggedLoading(false);
@@ -74,7 +64,6 @@ export const ListingProvider = ({ children }) => {
       setListingDetail(data);
       return data;
     } catch (error) {
-      console.error("Listing Service failed", error);
       throw error;
     } finally {
       setListingDetailLoading(false);

@@ -28,10 +28,8 @@ export const AsinProvider = ({ children }) => {
       const list = Array.isArray(res) ? res : (res?.data ?? []);
       setAllAsins(list);
       setAsinPagination(res?.pagination || {});
-      themeToast.success("ASINs fetched successfully!");
       return list;
     } catch (error) {
-      console.error("Failed to get ASINs", error);
       themeToast.error(
         error?.response?.data?.message || "Failed to fetch ASINs",
       );

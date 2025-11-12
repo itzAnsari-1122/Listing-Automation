@@ -28,7 +28,7 @@ import ThemeTextField from "../ui/ThemeTextField";
 import ThemeButton from "../ui/ThemeButton";
 import ThemeLoader from "../ui/ThemeLoader";
 
-const RestrictedWordModal = ({ open, onClose }) => {
+const AddRestrictedWordModal = ({ open, onClose }) => {
   const [isUploadMode, setIsUploadMode] = useState(true);
   const [file, setFile] = useState(null);
   const [manualRestrictedWord, setManualRestrictedWord] = useState("");
@@ -455,4 +455,4 @@ const RestrictedWordModal = ({ open, onClose }) => {
   );
 };
 
-export default RestrictedWordModal;
+export default AddRestrictedWordModal;

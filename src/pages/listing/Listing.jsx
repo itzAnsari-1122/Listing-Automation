@@ -1,17 +1,12 @@
-import { DollarSign, Package, Star, Upload, Search, X } from "lucide-react";
+import { Search, Upload, X } from "lucide-react";
 import React, { useEffect, useState, useMemo } from "react";
 import { RiFileList3Fill } from "react-icons/ri";
 import { useListing } from "../../context/ListingContext";
 import CustomTable from "../../components/ui/CustomTable";
 import ThemeSelectField from "../../components/ui/ThemeSelectField";
 import ThemeButton from "../../components/ui/ThemeButton";
-import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
-import AsinModal from "../../components/ui/AsinModal";
-import AddAsinModal from "../../components/ui/AsinAddModel";
-import RestrictedWordModal from "../../components/ui/RestrictedWordModal";
-import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { CountryOptions } from "../../utils";
 import {
   FiAlertTriangle,
@@ -19,8 +14,12 @@ import {
   FiPackage,
   FiRefreshCw,
 } from "react-icons/fi";
-import { Box } from "@mui/material";
 import ThemeChip from "../../components/ui/ThemeChip";
+import AsinAddModal from "../../components/ui/AsinAddModel";
+import AsinModal from "../../components/ui/AsinModal";
+import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
+import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
+import { Box } from "@mui/material";
 
 const Listing = () => {
   const {
@@ -278,11 +277,6 @@ const Listing = () => {
             onClick={() => {
               if (row?.asin && row?.marketplaceId) {
                 navigate(`/listing/${row.asin}?id=${row.marketplaceId}`);
-              } else {
-                console.warn(
-                  "Missing asin or marketplaceId for navigation:",
-                  row,
-                );
               }
             }}
           >
@@ -312,6 +306,7 @@ const Listing = () => {
           />
           Listing
         </h1>
+
         <Box sx={{ display: "flex", gap: 2 }}>
           <ThemeButton
             buttonType="button"
@@ -540,14 +535,14 @@ const Listing = () => {
       )}
 
       {showAddAsinModal && (
-        <AddAsinModal
+        <AsinAddModal
           open={showAddAsinModal}
           onClose={() => setShowAddAsinModal(false)}
         />
       )}
-      {/* 🔹 Restricted Words */}
+
       {showRestrictedModal && (
-        <RestrictedWordModal
+        <RestrictedWordsModal
           open={showRestrictedModal}
           onClose={() => setShowRestrictedWordModal(false)}
           onAddClick={() => setShowAddRestrictedWordModal(true)}

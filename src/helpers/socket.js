@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
-
-const SOCKET_URL = import.meta.env.API_BASE_URL || "http://localhost:8080";
+console.log(import.meta.env.API_BASE_URL, "--- IGNORE ---");
+const SOCKET_URL =
+  import.meta.env.API_BASE_URL || "https://a1365d3820d1.ngrok-free.app";
 
 const socket = io(SOCKET_URL, {
   transports: ["websocket", "polling"], // Fallback support
