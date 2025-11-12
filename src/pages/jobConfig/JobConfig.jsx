@@ -449,14 +449,14 @@ const JobConfig = () => {
             {
               label: "Violations Check",
               description: "Detect compliance issues",
-              color: "warning",
+              color: "success",
               key: "violations",
               value: violations,
             },
             {
               label: "Send Error Emails",
               description: "Receive notifications for errors",
-              color: "error",
+              color: "success",
               key: "errors",
               value: errors,
             },
