@@ -2,12 +2,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Login from "../pages/auth/Login";
 import ListingReport from "../pages/listingReport/ListingReport";
-import ListingDetail from "../pages/listing/detail/ListingDetail";
 import Listing from "../pages/listing/Listing";
 import Profile from "../pages/profile/Profile";
 import Users from "../pages/user/Users";
 import MainLayout from "../layout/MainLayout";
 import JobConfig from "../layout/JobConfig";
+import ListingDetail from "../pages/listing/ListingDetail";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();

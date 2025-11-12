@@ -111,7 +111,7 @@ export const NotificationMarkAllAsReadCallApi = () =>
 export const UnreadNotificationsCAllApi = () =>
   makeAPICall({
     option: {
-      method: "post",
+      method: "get",
       url: `${NOTIFICATION}/unread`,
     },
   });
