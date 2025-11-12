@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress, Paper, Alert } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Typography, CircularProgress, Paper } from "@mui/material";
 import {
   useJobConfig,
   COUNTRIES_BY_REGION,
@@ -21,8 +21,6 @@ const JobConfig = () => {
     updateJobConfigService,
   } = useJobConfig();
 
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [allCountry, setAllCountry] = useState("");
   const [availability, setAvailability] = useState(false);
   const [violations, setViolations] = useState(false);
   const [errors, setErrors] = useState(false);
@@ -92,20 +90,6 @@ const JobConfig = () => {
     });
 
     setRegionData(defaultRegionSetup);
-  };
-
-  const handleAllCountryChange = async (value) => {
-    try {
-      setAllCountry(value);
-      await updateJobConfigService({ allCountry: value });
-    } catch {}
-  };
-
-  const handleCountryChange = async (value) => {
-    try {
-      setSelectedCountry(value);
-      await updateJobConfigService({ marketPlaceId: value });
-    } catch {}
   };
 
   const handleSwitchChange = async (key, value) => {
@@ -375,46 +359,6 @@ const JobConfig = () => {
           </div>
         </div>
       </div>
-
-      {/* Country Configuration Card - ORIGINAL STYLE */}
-      <Paper
-        elevation={1}
-        sx={{
-          p: 3,
-          mb: 3,
-          borderRadius: 2,
-          backgroundColor: "var(--color-surface)",
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 1px 3px 0 var(--color-shadow-light)",
-        }}
-      >
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          mb={2}
-          color="var(--color-text)"
-        >
-          Country Configuration
-        </Typography>
-
-        <Box sx={{ display: "grid", gap: 2 }}>
-          <ThemeSelectField
-            countriesFlags
-            label="Marketplace Selection"
-            name="countrySelector"
-            value={selectedCountry}
-            onChange={handleCountryChange}
-            options={Object.values(COUNTRIES_BY_REGION)
-              .flat()
-              .map((c) => ({
-                label: `${c.label} (${c.code})`,
-                value: c.value,
-              }))}
-            placeholder="Select Marketplace"
-            fullWidth
-          />
-        </Box>
-      </Paper>
 
       {/* Feature Toggles Card - UPDATED SWITCHES */}
       <Paper
