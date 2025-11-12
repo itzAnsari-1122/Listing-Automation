@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useCatalog } from "../../context/CatalogContext";
 import { GrCatalog } from "react-icons/gr";
+import { themeToast } from "../../components/ui/ThemeToaster";
 
 // --- START: CatalogDetail Component (New component for details view) ---
 
@@ -262,8 +263,7 @@ function Catalog() {
 
     try {
       const base64String = await convertToBase64(file);
-      console.log("📁 Base64:", base64String);
-      alert("File converted to Base64 and ready to upload!");
+      themeToast.success("File converted to Base64 and ready to upload!");
       setShowUploadModal(false);
     } catch (err) {
       console.error("Upload failed:", err);

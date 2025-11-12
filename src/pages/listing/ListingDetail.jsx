@@ -54,16 +54,8 @@ import { useAuth } from "../../context/AuthContext";
 const normalizeListing = (res) => {
   if (!res) return null;
 
-  console.log("🔍 Raw API response structure:", {
-    hasData: !!res.data,
-    hasNestedData: !!(res.data && res.data.data),
-    keys: Object.keys(res),
-  });
-
   // If response has success property and data nested inside
   if (res.success && res.data) {
-    console.log("✅ Success response with nested data");
-
     // Handle the double-nested data structure
     if (res.data.data) {
       return {
@@ -104,7 +96,6 @@ const normalizeListing = (res) => {
     return res;
   }
 
-  console.log("❓ Unknown structure, returning as-is");
   return res;
 };
 
@@ -442,8 +433,6 @@ export default function ListingDetail() {
     const d = normalizeListing(listingDetail);
     if (!d || !d.asin) return;
 
-    console.log("Normalized listing detail:", d);
-
     if (sameKey(d, asin, marketplaceId)) {
       if (!sameKey(productData, d.asin, d.marketplaceId)) {
         setProductData(d);
@@ -481,9 +470,6 @@ export default function ListingDetail() {
   useEffect(() => {
     if (!productData || initialDataLoadedRef.current) return;
 
-    console.log("📝 ProductData for form setup:", productData);
-    console.log("🔍 Available keys:", Object.keys(productData));
-
     // Extract data with better fallbacks
     const summaries = productData.summaries || [];
     const rawSummary = summaries[0] || {};
@@ -501,16 +487,6 @@ export default function ListingDetail() {
     const productTypes = productData.productTypes || [];
     const salesRanks = productData.salesRanks || [];
     const identifiers = productData.identifiers || [];
-
-    console.log("📊 Extracted data:", {
-      summariesCount: summaries.length,
-      attributesCount: Object.keys(productAttr).length,
-      itemsCount: items.length,
-      imagesCount: images.length,
-      productTypes: productTypes.length,
-      salesRanks: salesRanks.length,
-      identifiers: identifiers.length,
-    });
 
     const safeSummary = {
       ...rawSummary,
@@ -541,8 +517,6 @@ export default function ListingDetail() {
         return null;
       })
       .filter(Boolean);
-
-    console.log("🌟 Highlights extracted:", highlightsArr);
 
     // Prepare form values
     const formValues = {
@@ -581,8 +555,6 @@ export default function ListingDetail() {
       highlights: highlightsArr,
     };
 
-    console.log("✅ Final form values:", formValues);
-
     reset(formValues);
     latestFormValuesRef.current = formValues;
     setProductData((prev) => ({ ...prev, __safeSummary: safeSummary }));
@@ -603,8 +575,6 @@ export default function ListingDetail() {
     const payload = {
       updates: {},
     };
-
-    console.log("🔄 Preparing edit payload...");
 
     // Helper to check if value changed
     const hasChanged = (field, newValue) => {
@@ -629,14 +599,12 @@ export default function ListingDetail() {
         hasChanged(formField, formData[formField])
       ) {
         payload.updates[updateField] = formData[formField];
-        console.log(`📝 Updating ${updateField}:`, formData[formField]);
       }
     });
 
     // Update highlights/bullet points
     if (formData.highlights && hasChanged("highlights", formData.highlights)) {
       payload.updates.bullet_point = formData.highlights.filter(Boolean);
-      console.log("📝 Updating bullet_point:", formData.highlights);
     }
 
     // Update product attributes
@@ -654,7 +622,6 @@ export default function ListingDetail() {
 
       if (Object.keys(changedAttrs).length > 0) {
         payload.updates.productAttributes = changedAttrs;
-        console.log("📝 Updating productAttributes:", changedAttrs);
       }
     }
 
@@ -673,11 +640,9 @@ export default function ListingDetail() {
 
       if (Object.keys(changedAttrs).length > 0) {
         payload.updates.itemAttributes = changedAttrs;
-        console.log("📝 Updating itemAttributes:", changedAttrs);
       }
     }
 
-    console.log("✅ Final payload:", payload);
     return payload;
   };
 
@@ -694,13 +659,9 @@ export default function ListingDetail() {
         return;
       }
 
-      console.log("🚀 Sending update request...");
-
       const result = await EditListingService(asin, payload, marketplaceId);
 
       if (result?.success) {
-        console.log("✅ Backend response:", result);
-
         // Refresh data
         const freshData = await ListingDetailService({ asin, marketplaceId });
 
@@ -752,13 +713,6 @@ export default function ListingDetail() {
 
   const offers = item?.offers || [];
   const offer = offers[0];
-
-  console.log("🎯 Render data:", {
-    summary,
-    item,
-    productAttr: Object.keys(productAttr),
-    offer,
-  });
 
   const restrictedWords = useMemo(
     () => extractRestrictedWords(productData?.violations || []),

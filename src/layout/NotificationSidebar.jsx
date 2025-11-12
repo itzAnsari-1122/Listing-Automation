@@ -484,7 +484,6 @@ export default function NotificationSidebar({
               const marketplaceIds = payload.map(
                 (p) => p.marketplaceId || p.value,
               );
-              console.log("Selected marketplace IDs:", marketplaceIds);
             }}
             sx={{
               borderRadius: "40px",

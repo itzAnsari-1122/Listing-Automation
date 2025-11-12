@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import Login from "../pages/auth/Login";
 import ListingReport from "../pages/listingReport/ListingReport";
 import Listing from "../pages/listing/Listing";
+import ListingDetail from "../pages/listing/ListingDetail";
 import Profile from "../pages/profile/Profile";
 import Users from "../pages/user/Users";
 import MainLayout from "../layout/MainLayout";
