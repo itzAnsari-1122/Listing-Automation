@@ -11,10 +11,10 @@ import {
   useJobConfig,
   COUNTRIES_BY_REGION,
   REGION_TYPES,
-} from "../context/JobConfigContext";
-import ThemeSelectField from "../components/ui/ThemeSelectField";
-import ThemeButton from "../components/ui/ThemeButton";
-import ThemeChip from "../components/ui/ThemeChip";
+} from "../../context/JobConfigContext";
+import ThemeSelectField from "../../components/ui/ThemeSelectField";
+import ThemeButton from "../../components/ui/ThemeButton";
+import ThemeChip from "../../components/ui/ThemeChip";
 import { PiUserSwitch } from "react-icons/pi";
 import { FiAlertTriangle, FiCheckCircle, FiSettings } from "react-icons/fi";
 import Tooltip from "@mui/material/Tooltip";

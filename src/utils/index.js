@@ -57,6 +57,12 @@ export const CountryOptions = [
   { value: "A39IBJ37TRP1C6", label: "Australia", code: "au" },
   { value: "A1VC38T7YXB528", label: "Japan", code: "jp" },
 ];
+export const CountryOptionsNorthAmerica = [
+  { value: "ATVPDKIKX0DER", label: "United States", code: "us" },
+  { value: "A2EUQ1WTGCTBG2", label: "Canada", code: "ca" },
+  { value: "A1AM78C64UM0Y8", label: "Mexico", code: "mx" },
+  { value: "A2Q3Y263D00KWC", label: "Brazil", code: "br" },
+];
 export const marketplaceToCountry = {
   ATVPDKIKX0DER: "us",
   A2EUQ1WTGCTBG2: "ca",
