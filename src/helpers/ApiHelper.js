@@ -6,7 +6,7 @@ const APIBaseURL =
 // ✅ Create Axios instance
 const axiosApi = axios.create({
   baseURL: `${APIBaseURL}/api`,
-  timeout: 20000,
+  timeout: 100000,
 });
 
 // ✅ Request Interceptor: attach token

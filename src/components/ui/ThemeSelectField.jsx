@@ -47,17 +47,33 @@ export default function ThemeSelectField({
     const handleOptionToggle = (optionValue) => {
       if (multiple) {
         const sv = Array.isArray(selectedValue) ? selectedValue : [];
-        const newValues = sv.includes(optionValue)
-          ? sv.filter((v) => v !== optionValue)
-          : [...sv, optionValue];
-        const newPayload = newValues.map((v) =>
-          options.find((o) => o.value === v),
+        let newValues;
+
+        if (sv.includes(optionValue)) {
+          // Remove the option
+          newValues = sv.filter((v) => v !== optionValue);
+        } else {
+          // Add the option
+          newValues = [...sv, optionValue];
+        }
+
+        // Create payload with the actual selected options
+        const newPayload = options.filter((opt) =>
+          newValues.includes(opt.value),
         );
-        (fieldProps.onChange || onChange)?.(newValues, newPayload);
+
+        if (fieldProps.onChange) {
+          fieldProps.onChange(newValues);
+        } else if (onChange) {
+          onChange(newValues, newPayload);
+        }
       } else {
-        fieldProps.onChange
-          ? fieldProps.onChange(optionValue)
-          : onChange && onChange(optionValue);
+        const selectedOption = options.find((o) => o.value === optionValue);
+        if (fieldProps.onChange) {
+          fieldProps.onChange(optionValue);
+        } else if (onChange) {
+          onChange(optionValue, selectedOption);
+        }
         setOpen(false);
       }
     };
@@ -65,14 +81,20 @@ export default function ThemeSelectField({
     const handleSelectAll = () => {
       const sv = Array.isArray(selectedValue) ? selectedValue : [];
       if (sv.length === options.length) {
-        fieldProps.onChange
-          ? fieldProps.onChange([])
-          : onChange && onChange([]);
+        // Clear all
+        if (fieldProps.onChange) {
+          fieldProps.onChange([]);
+        } else if (onChange) {
+          onChange([], []);
+        }
       } else {
+        // Select all
         const allValues = options.map((opt) => opt.value);
-        fieldProps.onChange
-          ? fieldProps.onChange(allValues)
-          : onChange && onChange(allValues);
+        if (fieldProps.onChange) {
+          fieldProps.onChange(allValues);
+        } else if (onChange) {
+          onChange(allValues, options);
+        }
       }
     };
 
@@ -93,12 +115,18 @@ export default function ThemeSelectField({
       selectedValue.length === options.length &&
       options.length > 0;
 
+    const isSomeSelected =
+      multiple &&
+      Array.isArray(selectedValue) &&
+      selectedValue.length > 0 &&
+      selectedValue.length < options.length;
+
     return (
       <div className="relative" ref={dropdownRef} style={{ width }}>
         <div
           className={`flex w-full cursor-pointer items-center justify-between overflow-hidden border px-3 py-2 transition-all duration-150
             ${disabled ? "cursor-not-allowed opacity-60" : ""}
-            ${borderRadius ? "" : "rounded-lg"} // Only apply if no custom borderRadius rounded-lg
+            ${borderRadius ? "" : "rounded-lg"}
           `}
           style={{
             backgroundColor: "var(--color-surface)",
@@ -109,9 +137,9 @@ export default function ThemeSelectField({
             boxShadow: error
               ? "0 0 0 2px var(--color-error)"
               : "0 0 0 2px transparent",
-            borderRadius: borderRadius, // Apply custom border radius if provided
+            borderRadius: borderRadius,
           }}
-          onClick={() => !disabled && setOpen((prev) => !prev)}
+          onClick={() => !disabled && !readOnly && setOpen((prev) => !prev)}
         >
           <div className="flex flex-1 items-center gap-2 truncate text-sm">
             {multiple ? (
@@ -124,17 +152,31 @@ export default function ThemeSelectField({
                       <div
                         key={opt.value}
                         className="flex items-center gap-1 truncate rounded bg-[var(--color-bg)] px-2 py-0.5 text-xs"
-                        style={{ borderRadius: borderRadius }} // Apply same borderRadius to chips
+                        style={{ borderRadius: borderRadius }}
                       >
-                        {(opt.code && label?.toLowerCase() === "country") ||
-                          (countriesFlags && (
-                            <img
-                              src={getFlagUrl(opt.code)}
-                              alt={`${opt.label} flag`}
-                              className="h-3 w-4 rounded-sm"
-                            />
-                          ))}
+                        {countriesFlags && (
+                          <img
+                            src={getFlagUrl(opt.code)}
+                            alt={`${opt.label} flag`}
+                            className="h-3 w-4 rounded-sm"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        )}
                         <span>{opt.label}</span>
+                        {!readOnly && (
+                          <button
+                            type="button"
+                            className="ml-1 hover:text-[var(--color-error)]"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOptionToggle(opt.value);
+                            }}
+                          >
+                            ×
+                          </button>
+                        )}
                       </div>
                     ))}
                   {selectedValue.length > 3 && (
@@ -148,14 +190,16 @@ export default function ThemeSelectField({
               )
             ) : selectedLabels ? (
               <>
-                {(selectedOption?.code && label?.toLowerCase() === "country") ||
-                  (countriesFlags === true && (
-                    <img
-                      src={getFlagUrl(selectedOption.code)}
-                      alt={`${selectedOption.label} flag`}
-                      className="h-4 w-5 rounded-sm"
-                    />
-                  ))}
+                {countriesFlags && selectedOption?.code && (
+                  <img
+                    src={getFlagUrl(selectedOption.code)}
+                    alt={`${selectedOption.label} flag`}
+                    className="h-4 w-5 rounded-sm"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                )}
                 <span>{selectedLabels}</span>
               </>
             ) : (
@@ -163,7 +207,7 @@ export default function ThemeSelectField({
             )}
           </div>
 
-          {multiple && options.length > 0 && (
+          {multiple && options.length > 0 && !readOnly && (
             <div
               className="ml-2 flex items-center"
               onClick={(e) => {
@@ -176,6 +220,11 @@ export default function ThemeSelectField({
                   className="h-4 w-4 text-[var(--color-error)] transition hover:opacity-80"
                   title="Clear all"
                 />
+              ) : isSomeSelected ? (
+                <div
+                  className="h-4 w-4 rounded-sm border border-[var(--color-primary)] bg-[var(--color-primary)] bg-opacity-50"
+                  title="Some selected"
+                />
               ) : (
                 <PlusCircle
                   className="h-4 w-4 text-[var(--color-primary)] transition hover:opacity-80"
@@ -185,69 +234,99 @@ export default function ThemeSelectField({
             </div>
           )}
 
-          <ChevronDown
-            className={`ml-2 h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
-            style={{ color: "var(--color-icon)" }}
-          />
+          {!readOnly && (
+            <ChevronDown
+              className={`ml-2 h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+              style={{ color: "var(--color-icon)" }}
+            />
+          )}
         </div>
 
-        {open && (
+        {open && !readOnly && (
           <div
             className="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto border shadow-md"
             style={{
               backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-primary)",
               boxShadow: `0 4px 10px var(--color-shadow-heavy)`,
-              borderRadius: borderRadius, // Apply same borderRadius to dropdown
+              borderRadius: borderRadius,
             }}
           >
             {options.length > 0 ? (
-              options.map((option) => {
-                const isSelected = multiple
-                  ? Array.isArray(selectedValue) &&
-                    selectedValue.includes(option.value)
-                  : selectedValue === option.value;
-
-                return (
+              <>
+                {multiple && options.length > 1 && (
                   <div
-                    key={option.value}
-                    className={`flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-[var(--color-bg)]
-                      ${isSelected ? "bg-[var(--color-bg)]" : ""}
-                    `}
-                    onClick={() => handleOptionToggle(option.value)}
-                    title={option.label}
+                    className="flex cursor-pointer items-center gap-2 border-b px-3 py-2 transition-colors hover:bg-[var(--color-bg)]"
+                    onClick={handleSelectAll}
                   >
-                    {multiple && (
-                      <div
-                        className={`flex h-4 w-4 items-center justify-center border transition-all duration-150 ${
-                          isSelected
-                            ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                    <div
+                      className={`flex h-4 w-4 items-center justify-center border transition-all duration-150 ${
+                        isAllSelected
+                          ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                          : isSomeSelected
+                            ? "border-[var(--color-primary)] bg-[var(--color-primary)] bg-opacity-50"
                             : "border-[var(--color-primary)]"
-                        }`}
-                        style={{ borderRadius: borderRadius }} // Apply same borderRadius to checkboxes
-                      >
-                        {isSelected && (
-                          <Check
-                            className="h-3 w-3 text-white"
-                            strokeWidth={3}
-                          />
-                        )}
-                      </div>
-                    )}
+                      }`}
+                      style={{ borderRadius: borderRadius }}
+                    >
+                      {(isAllSelected || isSomeSelected) && (
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      )}
+                    </div>
+                    <span className="text-sm">
+                      {isAllSelected ? "Deselect All" : "Select All"}
+                    </span>
+                  </div>
+                )}
+                {options.map((option) => {
+                  const isSelected = multiple
+                    ? Array.isArray(selectedValue) &&
+                      selectedValue.includes(option.value)
+                    : selectedValue === option.value;
 
-                    {(option.code && label?.toLowerCase() === "country") ||
-                      (countriesFlags && (
+                  return (
+                    <div
+                      key={option.value}
+                      className={`flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-[var(--color-bg)]
+                        ${isSelected ? "bg-[var(--color-bg)]" : ""}
+                      `}
+                      onClick={() => handleOptionToggle(option.value)}
+                      title={option.label}
+                    >
+                      {multiple && (
+                        <div
+                          className={`flex h-4 w-4 items-center justify-center border transition-all duration-150 ${
+                            isSelected
+                              ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                              : "border-[var(--color-primary)]"
+                          }`}
+                          style={{ borderRadius: borderRadius }}
+                        >
+                          {isSelected && (
+                            <Check
+                              className="h-3 w-3 text-white"
+                              strokeWidth={3}
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {countriesFlags && (
                         <img
                           src={getFlagUrl(option.code)}
                           alt={`${option.label} flag`}
                           className="h-4 w-5 rounded-sm"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
                         />
-                      ))}
+                      )}
 
-                    <span className="truncate text-sm">{option.label}</span>
-                  </div>
-                );
-              })
+                      <span className="truncate text-sm">{option.label}</span>
+                    </div>
+                  );
+                })}
+              </>
             ) : (
               <div className="px-3 py-2 text-sm opacity-70">No options</div>
             )}

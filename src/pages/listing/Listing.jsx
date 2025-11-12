@@ -60,7 +60,7 @@ const Listing = () => {
       page,
       limit: rowsPerPage,
       search: debouncedSearch,
-      countryCodes: selectedCountries,
+      countryCodes: selectedCountries.map((p) => p.code),
       status: selectedStatus === "all" ? null : selectedStatus,
       startDate: "2020-01-01 00:00:00",
       endDate: "2026-12-01 23:59:59",
@@ -473,14 +473,13 @@ const Listing = () => {
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
             <ThemeSelectField
+              countriesFlags
               label="Country"
               name="countryFilter"
               multiple
-              value={selectedCountries}
+              value={selectedCountries.map((p) => p.value)}
               onChange={(values, payload) => {
-                setSelectedCountries(values);
-
-                const codes = payload.map((p) => p.code);
+                setSelectedCountries(payload);
               }}
               options={CountryOptions}
               placeholder="Select countries"
