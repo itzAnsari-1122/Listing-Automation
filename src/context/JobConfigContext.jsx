@@ -154,6 +154,7 @@ export const JobConfigProvider = ({ children }) => {
       setJobConfigUpdating(true);
 
       const formattedPayload = {
+        _id: "690fde426093e34cb2cfd4a1",
         checkAvailability:
           payload?.checkAvailability ?? jobConfig?.checkAvailability ?? false,
         checkViolations:
@@ -163,7 +164,7 @@ export const JobConfigProvider = ({ children }) => {
         searchRegionType:
           payload?.searchRegionType ?? jobConfig?.searchRegionType ?? [],
       };
-
+      console.log(formattedPayload);
       const { data } = await jobConfigUpdateCallApi(formattedPayload);
       setJobConfig(data);
       themeToast?.success("✅ Job configuration updated successfully!");

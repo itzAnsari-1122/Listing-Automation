@@ -3,11 +3,9 @@ import {
   Box,
   Typography,
   CircularProgress,
-  Switch,
   Paper,
   Checkbox,
   Alert,
-  Button,
 } from "@mui/material";
 import {
   useJobConfig,
@@ -15,7 +13,11 @@ import {
   REGION_TYPES,
 } from "../context/JobConfigContext";
 import ThemeSelectField from "../components/ui/ThemeSelectField";
+import ThemeButton from "../components/ui/ThemeButton";
+import ThemeChip from "../components/ui/ThemeChip";
 import { PiUserSwitch } from "react-icons/pi";
+import { FiAlertTriangle, FiCheckCircle, FiSettings } from "react-icons/fi";
+import Tooltip from "@mui/material/Tooltip";
 
 const JobConfig = () => {
   const {
@@ -164,7 +166,7 @@ const JobConfig = () => {
       if (formattedSearchRegionType.length === 0) {
         return;
       }
-
+      console.log(formattedSearchRegionType);
       await updateJobConfigService({
         searchRegionType: formattedSearchRegionType,
       });
@@ -176,100 +178,215 @@ const JobConfig = () => {
   const getActiveRegionsCount = () =>
     regionData.filter((region) => region.active).length;
 
-  if (jobConfigLoading && !jobConfig && !apiError) {
+  // Custom Switch Component
+  const CustomSwitch = ({
+    checked,
+    onChange,
+    disabled = false,
+    color = "primary",
+  }) => {
+    const getColors = () => {
+      switch (color) {
+        case "success":
+          return {
+            track: checked ? "var(--color-success)" : "var(--color-border)",
+            thumb: "white",
+          };
+        case "warning":
+          return {
+            track: checked ? "var(--color-warning)" : "var(--color-border)",
+            thumb: "white",
+          };
+        case "error":
+          return {
+            track: checked ? "var(--color-danger)" : "var(--color-border)",
+            thumb: "white",
+          };
+        default:
+          return {
+            track: checked ? "var(--color-primary)" : "var(--color-border)",
+            thumb: "white",
+          };
+      }
+    };
+
+    const colors = getColors();
+
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "400px",
-          gap: 2,
-          backgroundColor: "var(--color-bg)",
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onChange(!checked)}
+        className={`
+          relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out
+          ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+        `}
+        style={{
+          backgroundColor: colors.track,
+          border: `1px solid ${checked ? colors.track : "var(--color-border)"}`,
         }}
       >
-        <CircularProgress size={40} sx={{ color: "var(--color-primary)" }} />
-        <Typography variant="h6" color="var(--color-text-muted)">
-          Loading Job Configuration...
-        </Typography>
-      </Box>
+        <span
+          className={`
+            inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200 ease-in-out
+            ${checked ? "translate-x-6" : "translate-x-1"}
+            shadow-sm
+          `}
+          style={{
+            backgroundColor: colors.thumb,
+          }}
+        />
+      </button>
+    );
+  };
+
+  if (jobConfigLoading && !jobConfig && !apiError) {
+    return (
+      <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-96 flex-col items-center justify-center gap-4">
+          <CircularProgress size={40} sx={{ color: "var(--color-primary)" }} />
+          <Typography variant="h6" style={{ color: "var(--color-text)" }}>
+            Loading Job Configuration...
+          </Typography>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        p: 4,
-        minHeight: "100vh",
-        backgroundColor: "var(--color-bg)",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          display="flex"
-          gap={1}
-          color="var(--color-text)"
+    <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mb-6 flex items-center justify-between pt-4">
+        <h1
+          className="flex items-center gap-4 text-3xl font-bold"
+          style={{ color: "var(--color-text)" }}
         >
-          <PiUserSwitch
-            style={{
-              fontSize: "1.25em",
-              marginRight: 6,
-              marginTop: 4,
-              color: "var(--color-primary)",
-            }}
-          />
+          <PiUserSwitch size={30} style={{ color: "var(--color-primary)" }} />
           Job Configuration
-          {jobConfigUpdating && (
+        </h1>
+
+        {jobConfigUpdating && (
+          <div className="flex items-center gap-2">
             <CircularProgress
               size={20}
-              sx={{ ml: 2, color: "var(--color-primary)" }}
+              sx={{ color: "var(--color-primary)" }}
             />
-          )}
-        </Typography>
-      </Box>
+            <span style={{ color: "var(--color-text-muted)" }}>
+              Updating...
+            </span>
+          </div>
+        )}
+      </div>
 
       {apiError && (
-        <Alert
-          severity="error"
-          sx={{
-            mb: 3,
+        <div
+          className="mb-6 rounded-lg p-4"
+          style={{
             backgroundColor: "var(--color-danger-200)",
-            color: "var(--color-text)",
             border: "1px solid var(--color-danger-200)",
-            "& .MuiAlert-icon": {
-              color: "var(--color-danger)",
-            },
+            color: "var(--color-text)",
           }}
-          action={
-            <Button
-              color="inherit"
-              size="small"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <Typography variant="h6" style={{ color: "var(--color-text)" }}>
+                <FiAlertTriangle className="mr-2 inline" />
+                API Connection Error
+              </Typography>
+              <Typography
+                variant="body2"
+                style={{ color: "var(--color-text-muted)", marginTop: 4 }}
+              >
+                {apiError}
+              </Typography>
+            </div>
+            <ThemeButton
+              size="sm"
+              tone="danger"
+              variant="outlined"
               onClick={loadJobConfig}
-              sx={{ color: "var(--color-danger)" }}
             >
               RETRY
-            </Button>
-          }
-        >
-          <Typography variant="h6" color="var(--color-text)">
-            API Connection Error
-          </Typography>
-          <Typography variant="body2" color="var(--color-text-muted)">
-            {apiError}
-          </Typography>
-        </Alert>
+            </ThemeButton>
+          </div>
+        </div>
       )}
 
+      {/* Stats Cards */}
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div
+          className="flex items-center gap-4 rounded-lg p-5 shadow-sm transition hover:shadow-md"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-lg"
+            style={{ backgroundColor: "rgba(59,130,246,0.15)" }}
+          >
+            <FiSettings size={22} style={{ color: "var(--color-primary)" }} />
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">Active Regions</p>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--color-text)" }}
+            >
+              {getActiveRegionsCount()}
+            </h2>
+          </div>
+        </div>
+
+        <div
+          className="flex items-center gap-4 rounded-lg p-5 shadow-sm transition hover:shadow-md"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-lg"
+            style={{ backgroundColor: "rgba(34,197,94,0.15)" }}
+          >
+            <FiCheckCircle
+              size={22}
+              style={{ color: "var(--color-success)" }}
+            />
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">Enabled Features</p>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--color-text)" }}
+            >
+              {[availability, violations, errors].filter(Boolean).length}
+            </h2>
+          </div>
+        </div>
+
+        <div
+          className="flex items-center gap-4 rounded-lg p-5 shadow-sm transition hover:shadow-md"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-lg"
+            style={{ backgroundColor: "rgba(239,68,68,0.15)" }}
+          >
+            <FiAlertTriangle
+              size={22}
+              style={{ color: "var(--color-error)" }}
+            />
+          </div>
+          <div>
+            <p className="text-sm text-gray-400">Configuration Issues</p>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--color-text)" }}
+            >
+              {apiError ? 1 : 0}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Country Configuration Card - ORIGINAL STYLE */}
       <Paper
         elevation={1}
         sx={{
@@ -329,6 +446,7 @@ const JobConfig = () => {
         </Box>
       </Paper>
 
+      {/* Feature Toggles Card - UPDATED SWITCHES */}
       <Paper
         elevation={1}
         sx={{
@@ -340,6 +458,15 @@ const JobConfig = () => {
           boxShadow: "0 1px 3px 0 var(--color-shadow-light)",
         }}
       >
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          mb={2}
+          color="var(--color-text)"
+        >
+          Feature Configuration
+        </Typography>
+
         <Box display="flex" flexDirection="column" gap={2}>
           {[
             {
@@ -391,35 +518,18 @@ const JobConfig = () => {
                   {sw.description}
                 </Typography>
               </Box>
-              <Switch
+              <CustomSwitch
                 checked={sw.value}
-                onChange={(e) => handleSwitchChange(sw.key, e.target.checked)}
-                color={sw.color}
+                onChange={(value) => handleSwitchChange(sw.key, value)}
                 disabled={jobConfigUpdating}
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color:
-                      sw.color === "success"
-                        ? "var(--color-success)"
-                        : sw.color === "error"
-                          ? "var(--color-danger)"
-                          : "var(--color-primary)",
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor:
-                      sw.color === "success"
-                        ? "var(--color-success)"
-                        : sw.color === "error"
-                          ? "var(--color-danger)"
-                          : "var(--color-primary)",
-                  },
-                }}
+                color={sw.color}
               />
             </Box>
           ))}
         </Box>
       </Paper>
 
+      {/* Region Configuration Card - ORIGINAL STYLE */}
       <Paper
         elevation={1}
         sx={{
@@ -554,28 +664,12 @@ const JobConfig = () => {
                   alignItems: "center",
                 }}
               >
-                <Box
-                  sx={{
-                    px: 2,
-                    py: 0.5,
-                    borderRadius: 2,
-                    backgroundColor: region.active
-                      ? "var(--color-success-200)"
-                      : "var(--color-danger-200)",
-                    color: region.active
-                      ? "var(--color-success)"
-                      : "var(--color-danger)",
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    minWidth: "80px",
-                    border: region.active
-                      ? "1px solid var(--color-success-200)"
-                      : "1px solid var(--color-danger-200)",
-                  }}
-                >
-                  {region.active ? "ACTIVE" : "INACTIVE"}
-                </Box>
+                <ThemeChip
+                  label={region.active ? "ACTIVE" : "INACTIVE"}
+                  tone={region.active ? "success" : "danger"}
+                  variant="filled"
+                  size="sm"
+                />
               </Box>
             </Box>
           ))}
@@ -588,34 +682,46 @@ const JobConfig = () => {
             mt: 3,
           }}
         >
-          <Button
-            onClick={handleSubmit}
-            disabled={jobConfigUpdating}
-            variant="contained"
-            startIcon={
-              jobConfigUpdating ? (
-                <CircularProgress
-                  size={16}
-                  sx={{ color: "var(--color-primary-contrast)" }}
-                />
-              ) : null
+          <Tooltip
+            title={
+              regionData.some(
+                (r) => r.checked && r.selectedMarketplaces.length > 0,
+              )
+                ? "Save region configuration"
+                : "Select at least one region with marketplaces to enable"
             }
-            sx={{
-              backgroundColor: "var(--color-primary)",
-              color: "var(--color-primary-contrast)",
-              "&:hover": {
-                backgroundColor: "var(--color-primary-600)",
-              },
-              "&:disabled": {
-                backgroundColor: "var(--color-text-muted)",
-              },
-            }}
+            arrow
           >
-            {jobConfigUpdating ? "Submitting..." : "Submit"}
-          </Button>
+            <span>
+              <ThemeButton
+                onClick={handleSubmit}
+                disabled={
+                  jobConfigUpdating ||
+                  !regionData.some(
+                    (r) => r.checked && r.selectedMarketplaces.length > 0,
+                  )
+                }
+                tone="primary"
+                variant="contained"
+                size="md"
+              >
+                {jobConfigUpdating ? (
+                  <>
+                    <CircularProgress
+                      size={16}
+                      sx={{ color: "var(--color-primary-contrast)", mr: 1 }}
+                    />
+                    Submitting...
+                  </>
+                ) : (
+                  "Save Configuration"
+                )}
+              </ThemeButton>
+            </span>
+          </Tooltip>
         </Box>
       </Paper>
-    </Box>
+    </div>
   );
 };
 

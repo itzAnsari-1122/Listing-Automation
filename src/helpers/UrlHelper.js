@@ -27,4 +27,3 @@ export const RESTRICTED_UPLOAD_CSV = "/restricted-words/upload";
 export const RESTRICTED_DOWNLOAD_CSV = "/restricted-words/download";
 export const JOB_CONFIG_GET = "/job-config/get";
 export const JOB_CONFIG_UPDATE = "/job-config/update";
-export const JOB_CONFIG = "/job-config";

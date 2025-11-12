@@ -11,7 +11,6 @@ import {
   CHANGE_PASSWORD,
   DELETE_ACCOUNT,
   EDIT_PROFILE,
-  JOB_CONFIG,
   JOB_CONFIG_GET,
   JOB_CONFIG_UPDATE,
   LISTINGS,
@@ -269,7 +268,5 @@ export const DownloadRestrictedCsvCallApi = async () => {
 
 export const jobConfigGetCallApi = () =>
   makeAPICall({ option: { method: "get", url: JOB_CONFIG_GET } });
-export const jobConfigUpdateCallApi = () =>
-  makeAPICall({ option: { method: "POST", url: JOB_CONFIG_UPDATE } });
-export const jobConfigCallApi = () =>
-  makeAPICall({ option: { method: "PATCH", url: JOB_CONFIG } });
+export const jobConfigUpdateCallApi = (data) =>
+  makeAPICall({ option: { method: "POST", url: JOB_CONFIG_UPDATE }, data });
