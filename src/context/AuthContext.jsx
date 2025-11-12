@@ -2,11 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   loginCallApi,
   getProfileCallApi,
+  usersCallApi,
   registerCallApi,
   editProfileCallApi,
   changePasswordCallApi,
   deleteAccountCallApi,
-  usersCallApi,
 } from "../helpers/BackendHelper";
 import { useNavigate } from "react-router-dom";
 import ThemeLoader from "../components/ui/ThemeLoader";
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setUserLoading(true);
       const { data } = await getProfileCallApi();
-      // setUser(data);
+      setUser(data);
       return data;
     } catch (error) {
       console.error("Get profile failed", error);
