@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Paper,
-  Checkbox,
-  Alert,
-} from "@mui/material";
+import { Box, Typography, CircularProgress, Paper, Alert } from "@mui/material";
 import {
   useJobConfig,
   COUNTRIES_BY_REGION,
@@ -66,7 +59,6 @@ const JobConfig = () => {
 
         return {
           regionType,
-          checked: isActive,
           selectedMarketplaces,
           active: isActive,
           marketplaces: availableMarketplaces,
@@ -92,7 +84,6 @@ const JobConfig = () => {
       const availableMarketplaces = COUNTRIES_BY_REGION[regionType] || [];
       return {
         regionType,
-        checked: false,
         selectedMarketplaces: [],
         active: false,
         marketplaces: availableMarketplaces,
@@ -138,10 +129,9 @@ const JobConfig = () => {
       prev.map((item, i) => {
         if (i === index) {
           const updatedItem = { ...item, [field]: value };
-          if (field === "checked" || field === "selectedMarketplaces") {
-            updatedItem.active =
-              updatedItem.checked &&
-              updatedItem.selectedMarketplaces.length > 0;
+          // Update active status based on selected marketplaces
+          if (field === "selectedMarketplaces") {
+            updatedItem.active = updatedItem.selectedMarketplaces.length > 0;
           }
           return updatedItem;
         }
@@ -157,7 +147,7 @@ const JobConfig = () => {
   const handleSubmit = async () => {
     try {
       const formattedSearchRegionType = regionData
-        .filter((r) => r.checked && r.selectedMarketplaces.length > 0)
+        .filter((r) => r.selectedMarketplaces.length > 0)
         .map((r) => ({
           regionType: r.regionType,
           marketPlaceIds: r.selectedMarketplaces,
@@ -410,26 +400,6 @@ const JobConfig = () => {
         <Box sx={{ display: "grid", gap: 2 }}>
           <ThemeSelectField
             countriesFlags
-            label="Primary Country Selection"
-            name="allCountry"
-            value={allCountry}
-            onChange={handleAllCountryChange}
-            options={[
-              { label: "United States", value: "US" },
-              { label: "Canada", value: "CA" },
-              { label: "United Kingdom", value: "UK" },
-              { label: "Australia", value: "AU" },
-              { label: "Japan", value: "JP" },
-              { label: "Germany", value: "DE" },
-              { label: "Brazil", value: "BR" },
-              { label: "Singapore", value: "SG" },
-            ]}
-            placeholder="Select Primary Country"
-            fullWidth
-          />
-
-          <ThemeSelectField
-            countriesFlags
             label="Marketplace Selection"
             name="countrySelector"
             value={selectedCountry}
@@ -529,7 +499,7 @@ const JobConfig = () => {
         </Box>
       </Paper>
 
-      {/* Region Configuration Card - ORIGINAL STYLE */}
+      {/* Region Configuration Card - UPDATED WITHOUT CHECKBOXES */}
       <Paper
         elevation={1}
         sx={{
@@ -602,19 +572,6 @@ const JobConfig = () => {
                   height: "100%",
                 }}
               >
-                <Checkbox
-                  checked={region.checked}
-                  onChange={(e) =>
-                    handleRegionChange(index, "checked", e.target.checked)
-                  }
-                  color="primary"
-                  sx={{
-                    color: "var(--color-primary)",
-                    "&.Mui-checked": {
-                      color: "var(--color-primary)",
-                    },
-                  }}
-                />
                 <Box>
                   <Typography
                     variant="body1"
@@ -651,7 +608,6 @@ const JobConfig = () => {
                       value: m.value,
                     }))}
                     fullWidth
-                    disabled={!region.checked}
                     multiple
                   />
                 </Box>
@@ -684,9 +640,7 @@ const JobConfig = () => {
         >
           <Tooltip
             title={
-              regionData.some(
-                (r) => r.checked && r.selectedMarketplaces.length > 0,
-              )
+              regionData.some((r) => r.selectedMarketplaces.length > 0)
                 ? "Save region configuration"
                 : "Select at least one region with marketplaces to enable"
             }
@@ -697,9 +651,7 @@ const JobConfig = () => {
                 onClick={handleSubmit}
                 disabled={
                   jobConfigUpdating ||
-                  !regionData.some(
-                    (r) => r.checked && r.selectedMarketplaces.length > 0,
-                  )
+                  !regionData.some((r) => r.selectedMarketplaces.length > 0)
                 }
                 tone="primary"
                 variant="contained"
@@ -714,7 +666,7 @@ const JobConfig = () => {
                     Submitting...
                   </>
                 ) : (
-                  "Save Configuration"
+                  "Submit"
                 )}
               </ThemeButton>
             </span>
