@@ -21,7 +21,6 @@ import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
 import ThemeLoader from "../../components/ui/ThemeLoader";
-import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
