@@ -36,7 +36,6 @@ const Listing = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [syncing, setSyncing] = useState(false);
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -158,7 +157,6 @@ const Listing = () => {
         marketplaceCode: item.marketplaceCode || summary.marketplaceId || "N/A",
         marketplaceName:
           item.marketplaceName || summary.websiteDisplayGroupName || "N/A",
-
         image,
         title,
         brand,
@@ -169,7 +167,6 @@ const Listing = () => {
         createdAt: item.createdAt || item.storedAt || null,
         updatedAt: item.updatedAt || null,
         storedAt: item.storedAt || null,
-
         upc,
         ean,
         identifiers,

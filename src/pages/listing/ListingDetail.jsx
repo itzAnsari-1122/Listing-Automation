@@ -485,8 +485,6 @@ export default function ListingDetail() {
 
     const images = productData.images || [];
     const productTypes = productData.productTypes || [];
-    const salesRanks = productData.salesRanks || [];
-    const identifiers = productData.identifiers || [];
 
     const safeSummary = {
       ...rawSummary,

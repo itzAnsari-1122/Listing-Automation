@@ -109,7 +109,17 @@ export const AuthProvider = ({ children }) => {
       setUserLoading(false);
     }
   };
-
+  // ✅ INIT
+  const token = localStorage.getItem("token");
+  useEffect(() => {
+    if (token) {
+      getProfileService()
+        .catch(() => logout())
+        .finally(() => setInitializing(false));
+    } else {
+      setInitializing(false);
+    }
+  }, [token]);
   // ✅ CHANGE PASSWORD
   const changePasswordService = async (payload) => {
     try {
@@ -154,18 +164,6 @@ export const AuthProvider = ({ children }) => {
     themeToast.info("Logged out");
     navigate("/auth/login", { replace: true });
   };
-
-  // ✅ INIT
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    if (token) {
-      getProfileService()
-        .catch(() => logout())
-        .finally(() => setInitializing(false));
-    } else {
-      setInitializing(false);
-    }
-  }, [token]);
 
   if (initializing) {
     return <ThemeLoader type="fullpage" message="Loading..." />;
