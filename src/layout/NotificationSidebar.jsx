@@ -767,8 +767,17 @@ export default function NotificationSidebar({
         </Box>
       </div>
 
-      <div className="sticky top-[118px] z-20 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1">
-        <div className="flex items-center justify-between">
+      {/* Active filters and Date grouping section - now combined in the upper non-scrollable area */}
+      <Box
+        sx={{
+          px: 2,
+          py: 1,
+          borderBottom: "1px solid var(--color-border)",
+          backgroundColor: "var(--color-surface)",
+        }}
+      >
+        {/* Active Filters */}
+        <div className="mb-2 flex items-center justify-between">
           <div className="flex flex-wrap items-center gap-1">
             <span className="text-xs font-medium text-gray-500 opacity-80">
               Active:
@@ -865,8 +874,72 @@ export default function NotificationSidebar({
               )}
           </div>
         </div>
-      </div>
 
+        {/* Date Grouping Headers */}
+        {!state.loading && locallyFiltered.length > 0 && (
+          <div>
+            {Object.entries(grouped).map(([label, items]) => {
+              const anyUnread = items.some((i) => i.status === "unread");
+              return (
+                <Box
+                  key={label}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    py: 1,
+                    borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      px: 1.5,
+                      py: 0.5,
+                      display: "inline-block",
+                      borderRadius: "6px",
+                      backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      color: "#374151",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      border: "1px solid rgba(0, 0, 0, 0.15)",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    {label}
+                  </Typography>
+                  <div>
+                    <Tooltip
+                      title={anyUnread ? "Mark day as read" : "All read"}
+                    >
+                      <span>
+                        <ThemeChip
+                          size="sm"
+                          label="Mark day"
+                          onClick={() => markDayAsRead(items)}
+                          disabled={!anyUnread}
+                          variant="outline"
+                          tone={anyUnread ? "primary" : "neutral"}
+                          sx={{
+                            borderRadius: "9999px",
+                            fontWeight: 600,
+                            fontSize: "0.7rem",
+                            height: "22px",
+                            minWidth: "auto",
+                            px: 1,
+                          }}
+                        />
+                      </span>
+                    </Tooltip>
+                  </div>
+                </Box>
+              );
+            })}
+          </div>
+        )}
+      </Box>
+
+      {/* Notification list - now only contains the actual notification items */}
       <div
         className="h-[calc(100%-180px)] space-y-3 overflow-y-auto scroll-smooth p-3"
         onScroll={handleScroll}
@@ -897,221 +970,157 @@ export default function NotificationSidebar({
 
         {!state.loading && locallyFiltered.length > 0 && (
           <>
-            {Object.entries(grouped).map(([label, items]) => {
-              const anyUnread = items.some((i) => i.status === "unread");
-              return (
-                <div className="mb-20" key={label}>
-                  <Box
-                    className="sticky right-[0px] top-[0px] z-0 py-1"
-                    sx={{
-                      backgroundColor: "rgba(0, 0, 0, 0.03)",
-                      borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
-                      borderTop: "1px solid rgba(0, 0, 0, 0.08)",
-                      marginLeft: "-12px",
-                      marginRight: "-12px",
-                      paddingLeft: "12px",
-                      paddingRight: "12px",
-                      backdropFilter: "blur(8px)",
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          px: 1.5,
-                          py: 0.5,
-                          display: "inline-block",
-                          borderRadius: "6px",
-                          backgroundColor: "rgba(0, 0, 0, 0.1)",
-                          color: "#374151",
-                          fontWeight: 700,
-                          fontSize: "0.75rem",
-                          border: "1px solid rgba(0, 0, 0, 0.15)",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                        }}
-                      >
-                        {label}
-                      </Typography>
-                      <div>
-                        <Tooltip
-                          title={anyUnread ? "Mark day as read" : "All read"}
-                        >
-                          <span>
-                            <ThemeChip
-                              size="sm"
-                              label="Mark day"
-                              onClick={() => markDayAsRead(items)}
-                              disabled={!anyUnread}
-                              variant="outline"
-                              tone={anyUnread ? "primary" : "neutral"}
-                              sx={{
-                                borderRadius: "9999px",
-                                fontWeight: 600,
-                                fontSize: "0.7rem",
-                                height: "22px",
-                                minWidth: "auto",
-                                px: 1,
-                              }}
-                            />
-                          </span>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </Box>
+            {Object.entries(grouped).map(([label, items]) => (
+              <div key={label}>
+                {items.map((n) => {
+                  const isUnread = n.status === "unread";
+                  const stripe = typeColor(n.type || "info");
 
-                  {items.map((n) => {
-                    const isUnread = n.status === "unread";
-                    const stripe = typeColor(n.type || "info");
-
-                    return (
-                      <Box
-                        key={n._id}
-                        onClick={() => handleNotificationClick(n)}
-                        role="listitem"
-                        aria-live={isUnread ? "assertive" : "polite"}
-                        sx={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 1.5,
-                          p: 1.5,
-                          mx: 1,
-                          mb: 1.25,
-                          borderRadius: "14px",
-                          position: "relative",
-                          cursor: "pointer",
-                          bgcolor: isUnread
-                            ? "rgba(59,130,246,0.06)"
-                            : "transparent",
-                          borderLeft: `3px solid ${stripe}`,
-                          transition: "all 0.2s ease",
-                          "&:hover": {
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
-                          },
-                        }}
-                      >
-                        {isUnread && (
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              top: 10,
-                              right: 12,
-                              width: 8,
-                              height: 8,
-                              borderRadius: "50%",
-                              backgroundColor: stripe,
-                              boxShadow: `0 0 0 0 ${stripe}`,
-                              animation: "pulseDot 1.8s ease-out infinite",
-                              "@keyframes pulseDot": {
-                                "0%": { boxShadow: `0 0 0 0 ${stripe}` },
-                                "70%": { boxShadow: "0 0 0 8px rgba(0,0,0,0)" },
-                                "100%": { boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
-                              },
-                            }}
-                          />
-                        )}
-
+                  return (
+                    <Box
+                      key={n._id}
+                      onClick={() => handleNotificationClick(n)}
+                      role="listitem"
+                      aria-live={isUnread ? "assertive" : "polite"}
+                      sx={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 1.5,
+                        p: 1.5,
+                        mx: 1,
+                        mb: 1.25,
+                        borderRadius: "14px",
+                        position: "relative",
+                        cursor: "pointer",
+                        bgcolor: isUnread
+                          ? "rgba(59,130,246,0.06)"
+                          : "transparent",
+                        borderLeft: `3px solid ${stripe}`,
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
+                        },
+                      }}
+                    >
+                      {isUnread && (
                         <Box
                           sx={{
-                            width: 36,
-                            height: 36,
-                            fontSize: "1rem",
-                            backgroundColor: stripe,
-                            color: "#fff",
+                            position: "absolute",
+                            top: 10,
+                            right: 12,
+                            width: 8,
+                            height: 8,
                             borderRadius: "50%",
+                            backgroundColor: stripe,
+                            boxShadow: `0 0 0 0 ${stripe}`,
+                            animation: "pulseDot 1.8s ease-out infinite",
+                            "@keyframes pulseDot": {
+                              "0%": { boxShadow: `0 0 0 0 ${stripe}` },
+                              "70%": { boxShadow: "0 0 0 8px rgba(0,0,0,0)" },
+                              "100%": { boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
+                            },
+                          }}
+                        />
+                      )}
+
+                      <Box
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          fontSize: "1rem",
+                          backgroundColor: stripe,
+                          color: "#fff",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+                        }}
+                      >
+                        <FiBell />
+                      </Box>
+
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                            color: "var(--color-text)",
+                            mb: 0.25,
+                            fontSize: "0.9rem",
+                            pr: 5,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          title={n.title}
+                        >
+                          {n.title}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            fontSize: "0.78rem",
+                            color: "var(--color-muted)",
+                            lineHeight: 1.35,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                          title={n.message}
+                        >
+                          {n.message}
+                        </Typography>
+
+                        <Typography
+                          sx={{
+                            fontSize: "0.68rem",
+                            color: "var(--color-muted)",
+                            mt: 0.5,
+                            fontStyle: "italic",
                             display: "flex",
+                            gap: 1,
                             alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                            boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+                            flexWrap: "wrap",
                           }}
                         >
-                          <FiBell />
-                        </Box>
-
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography
-                            sx={{
-                              fontWeight: 700,
-                              color: "var(--color-text)",
-                              mb: 0.25,
-                              fontSize: "0.9rem",
-                              pr: 5,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                            title={n.title}
-                          >
-                            {n.title}
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "0.78rem",
-                              color: "var(--color-muted)",
-                              lineHeight: 1.35,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              display: "-webkit-box",
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: "vertical",
-                            }}
-                            title={n.message}
-                          >
-                            {n.message}
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "0.68rem",
-                              color: "var(--color-muted)",
-                              mt: 0.5,
-                              fontStyle: "italic",
-                              display: "flex",
-                              gap: 1,
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            <span>{timeAgo(n.createdAt)}</span>
-                            <span>•</span>
+                          <span>{timeAgo(n.createdAt)}</span>
+                          <span>•</span>
+                          <span>{new Date(n.createdAt).toLocaleString()}</span>
+                          {n.source ? <span>• {n.source}</span> : null}
+                          {n.marketplaceId && n.asin ? (
                             <span>
-                              {new Date(n.createdAt).toLocaleString()}
+                              • {n.marketplaceId} / {n.asin}
                             </span>
-                            {n.source ? <span>• {n.source}</span> : null}
-                            {n.marketplaceId && n.asin ? (
-                              <span>
-                                • {n.marketplaceId} / {n.asin}
-                              </span>
-                            ) : null}
-                          </Typography>
-                        </Box>
-
-                        {isUnread && (
-                          <Tooltip title="Mark as read">
-                            <IconButton
-                              size="small"
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                try {
-                                  await markAsReadById(n?._id);
-                                } catch (err) {}
-                              }}
-                              sx={{ position: "absolute", top: 6, right: 22 }}
-                              aria-label="mark notification as read"
-                            >
-                              <FiCheck size={14} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                          ) : null}
+                        </Typography>
                       </Box>
-                    );
-                  })}
-                  {isLoadingMore && <ThemeLoader type="circle" size={20} />}
-                </div>
-              );
-            })}
+
+                      {isUnread && (
+                        <Tooltip title="Mark as read">
+                          <IconButton
+                            size="small"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                await markAsReadById(n?._id);
+                              } catch (err) {}
+                            }}
+                            sx={{ position: "absolute", top: 6, right: 22 }}
+                            aria-label="mark notification as read"
+                          >
+                            <FiCheck size={14} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  );
+                })}
+              </div>
+            ))}
 
             {(isLoadingMore || state.loading) && (
               <div className="z-100 flex justify-center py-4">
