@@ -21,6 +21,7 @@ import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
 import ThemeLoader from "../../components/ui/ThemeLoader";
+import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
@@ -58,15 +59,29 @@ const Listing = () => {
 
   // Update useEffect to handle loading states properly
   useEffect(() => {
-    ListingService({
-      page,
-      limit: rowsPerPage,
-      search: debouncedSearch,
-      countryCodes: selectedCountries.map((p) => p.code),
-      status: selectedStatus === "all" ? null : selectedStatus,
-      startDate: "2020-01-01 00:00:00",
-      endDate: "2026-12-01 23:59:59",
-    });
+    const fetchListings = async () => {
+      setBusy(true);
+      setTableLoading(true);
+      try {
+        const countryCodes = selectedCountries
+          .map((v) => CountryOptions.find((o) => o.value === v)?.code)
+          .filter(Boolean);
+        await ListingService({
+          page,
+          limit: rowsPerPage,
+          search: debouncedSearch,
+          countryCodes: selectedCountries.map((p) => p.code),
+          status: selectedStatus === "all" ? null : selectedStatus,
+          startDate: "2020-01-01 00:00:00",
+          endDate: "2026-12-01 23:59:59",
+        });
+      } finally {
+        setBusy(false);
+        setTableLoading(false);
+      }
+    };
+
+    fetchListings();
   }, [page, rowsPerPage, debouncedSearch, selectedCountries, selectedStatus]);
 
   const tableData = useMemo(() => {
