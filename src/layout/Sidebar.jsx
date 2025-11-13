@@ -4,7 +4,7 @@ import { PiUserSwitch } from "react-icons/pi";
 import { FaUserGroup } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
 import { NavLink } from "react-router-dom";
-import Profile from "../pages/profile/Profile";
+import Profile from "../components/ui/Profile";
 import Logo from "../assets/logo.png";
 import { RiFileList3Fill } from "react-icons/ri";
 

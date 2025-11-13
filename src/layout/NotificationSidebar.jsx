@@ -82,6 +82,136 @@ const typeColor = (t) =>
         ? "#DC2626"
         : "#3B82F6";
 
+// Custom Chip component that properly uses CSS variables
+const CustomChip = ({
+  label,
+  onDelete,
+  tone = "primary",
+  variant = "filled",
+  size = "sm",
+  ...props
+}) => {
+  const getChipStyles = () => {
+    const baseStyles = {
+      height: size === "sm" ? "22px" : "24px",
+      fontSize: "0.7rem",
+      fontWeight: 600,
+      borderRadius: "6px",
+      border: "1px solid",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "4px",
+      padding: "0 8px",
+      cursor: onDelete ? "pointer" : "default",
+    };
+
+    const toneColors = {
+      primary: {
+        bg: "var(--color-primary)",
+        text: "#ffffff",
+        border: "var(--color-primary)",
+      },
+      success: {
+        bg: "var(--color-success)",
+        text: "#ffffff",
+        border: "var(--color-success)",
+      },
+      danger: {
+        bg: "var(--color-danger)",
+        text: "#ffffff",
+        border: "var(--color-danger)",
+      },
+      warning: {
+        bg: "var(--color-warning)",
+        text: "#ffffff",
+        border: "var(--color-warning)",
+      },
+      neutral: {
+        bg: "var(--color-surface-secondary)",
+        text: "var(--color-text)",
+        border: "var(--color-border)",
+      },
+    };
+
+    const colors = toneColors[tone] || toneColors.primary;
+
+    if (variant === "outline") {
+      return {
+        ...baseStyles,
+        backgroundColor: "transparent",
+        color: colors.border,
+        borderColor: colors.border,
+      };
+    }
+
+    return {
+      ...baseStyles,
+      backgroundColor: colors.bg,
+      color: colors.text,
+      borderColor: colors.border,
+    };
+  };
+
+  return (
+    <div style={getChipStyles()} {...props}>
+      <span>{label}</span>
+      {onDelete && (
+        <FiX
+          size={12}
+          style={{
+            cursor: "pointer",
+            opacity: 0.8,
+          }}
+          onClick={onDelete}
+        />
+      )}
+    </div>
+  );
+};
+
+// Custom Icon Button that uses CSS variables
+const CustomIconButton = ({
+  children,
+  onClick,
+  title,
+  size = "sm",
+  ...props
+}) => {
+  const buttonSize = size === "sm" ? "32px" : "40px";
+
+  return (
+    <Tooltip title={title}>
+      <button
+        onClick={onClick}
+        style={{
+          width: buttonSize,
+          height: buttonSize,
+          borderRadius: "8px",
+          border: "1px solid var(--color-border)",
+          backgroundColor: "var(--color-surface)",
+          color: "var(--color-text)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = "var(--color-primary-light)";
+          e.target.style.borderColor = "var(--color-primary)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = "var(--color-surface)";
+          e.target.style.borderColor = "var(--color-border)";
+        }}
+        {...props}
+      >
+        {children}
+      </button>
+    </Tooltip>
+  );
+};
+
 export default function NotificationSidebar({
   sidebarVisible,
   setSidebarVisible,
@@ -134,11 +264,6 @@ export default function NotificationSidebar({
     if (isTablet) return "380px";
     return "400px";
   }, [isMobile, isTablet]);
-
-  const sidebarPosition = useMemo(() => {
-    if (isMobile) return "0";
-    return "0";
-  }, [isMobile]);
 
   useEffect(() => {
     const id = setTimeout(
@@ -388,18 +513,26 @@ export default function NotificationSidebar({
   return (
     <div
       ref={sidebarRef}
-      className={`fixed right-0 top-0 z-50 h-full transform bg-[var(--color-surface)] shadow-2xl transition-transform duration-300 ${
-        sidebarVisible ? "translate-x-0" : "translate-x-full"
-      }`}
+      className="fixed right-0 top-0 z-50 h-full transform shadow-2xl transition-transform duration-300"
       style={{
         width: sidebarWidth,
         left: isMobile ? "0" : "auto",
         borderLeft: isMobile ? "none" : "1px solid var(--color-border)",
         boxShadow: "0 16px 48px rgba(0,0,0,0.28)",
+        backgroundColor: "var(--color-surface)",
+        color: "var(--color-text)",
+        transform: sidebarVisible ? "translateX(0)" : "translateX(100%)",
       }}
       aria-label="Notifications sidebar"
     >
-      <div className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 shadow-sm">
+      {/* Header Section */}
+      <div
+        className="sticky top-0 z-30 border-b px-3 py-2 shadow-sm"
+        style={{
+          borderColor: "var(--color-border)",
+          backgroundColor: "var(--color-surface)",
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge
@@ -407,15 +540,24 @@ export default function NotificationSidebar({
               color={totalUnread > 0 ? "error" : "default"}
               overlap="circular"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: "var(--color-primary)",
+                  color: "#fff",
+                }}
+              >
                 <FiBell size={16} />
               </div>
             </Badge>
             <div>
-              <h2 className="text-base font-semibold text-[var(--color-text)]">
+              <h2
+                className="text-base font-semibold"
+                style={{ color: "var(--color-text)" }}
+              >
                 Notifications
               </h2>
-              <p className="text-xs text-[var(--color-muted)]">
+              <p className="text-xs" style={{ color: "var(--color-muted)" }}>
                 Stay on top of your updates
               </p>
             </div>
@@ -427,6 +569,10 @@ export default function NotificationSidebar({
                 size="small"
                 aria-label="refresh"
                 onClick={handleRefresh}
+                style={{
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-surface)",
+                }}
               >
                 <FiRefreshCw size={14} />
               </IconButton>
@@ -436,16 +582,26 @@ export default function NotificationSidebar({
                 title={totalUnread > 0 ? "Mark all as read" : "All caught up!"}
               >
                 <span>
-                  <ThemeButton
+                  <button
                     onClick={handleMarkAllRead}
-                    variant="outline"
-                    textColor={totalUnread > 0 ? "#3B82F6" : "#9CA3AF"}
-                    borderRadius="8px"
-                    size="sm"
                     disabled={totalUnread === 0}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      border: "1px solid var(--color-primary)",
+                      backgroundColor:
+                        totalUnread > 0
+                          ? "var(--color-primary)"
+                          : "transparent",
+                      color: totalUnread > 0 ? "#fff" : "var(--color-primary)",
+                      fontSize: "0.8rem",
+                      fontWeight: 500,
+                      cursor: totalUnread > 0 ? "pointer" : "not-allowed",
+                      opacity: totalUnread > 0 ? 1 : 0.6,
+                    }}
                   >
                     Mark all
-                  </ThemeButton>
+                  </button>
                 </span>
               </Tooltip>
             )}
@@ -455,6 +611,10 @@ export default function NotificationSidebar({
                 size="small"
                 aria-label="close"
                 onClick={() => setSidebarVisible(false)}
+                style={{
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-surface)",
+                }}
               >
                 <FiX size={14} />
               </IconButton>
@@ -462,6 +622,7 @@ export default function NotificationSidebar({
           </div>
         </div>
 
+        {/* Stats Row */}
         <Box
           sx={{
             display: "flex",
@@ -472,86 +633,88 @@ export default function NotificationSidebar({
           }}
         >
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            <ThemeChip
+            <CustomChip
               label={`Total: ${totalNotifications}`}
               tone="primary"
               variant="outline"
-              size="sm"
-              sx={{
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                height: "24px",
-                borderRadius: "6px",
-              }}
             />
-            <ThemeChip
+            <CustomChip
               label={`Unread: ${totalUnread}`}
               tone={totalUnread > 0 ? "danger" : "success"}
               variant={totalUnread > 0 ? "filled" : "outline"}
-              size="sm"
-              sx={{
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                height: "24px",
-                borderRadius: "6px",
-              }}
             />
           </Box>
           <Box sx={{ display: "flex", gap: 0.5 }}>
             <Tooltip title="Delete read notifications">
               <span>
-                <ThemeButton
-                  buttonType={isMobile ? "icon" : "default"}
-                  variant="outline"
-                  tone="neutral"
-                  aria-label="Delete read notifications"
+                <button
                   onClick={handleDeleteRead}
                   disabled={
                     (state?.totalRead ?? totalNotifications - totalUnread) <= 0
                   }
-                  title="Delete read notifications"
-                  size="sm"
-                  startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
-                  sx={{
+                  style={{
+                    padding: isMobile ? "4px" : "4px 8px",
                     borderRadius: "8px",
+                    border: "1px solid var(--color-border)",
+                    backgroundColor: "var(--color-surface)",
+                    color: "var(--color-text)",
                     fontSize: "0.7rem",
+                    fontWeight: 600,
                     height: "24px",
-                    px: isMobile ? 0.5 : 1,
                     minWidth: isMobile ? "32px" : "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    cursor:
+                      (state?.totalRead ?? totalNotifications - totalUnread) <=
+                      0
+                        ? "not-allowed"
+                        : "pointer",
+                    opacity:
+                      (state?.totalRead ?? totalNotifications - totalUnread) <=
+                      0
+                        ? 0.5
+                        : 1,
                   }}
                 >
                   {isMobile ? <FiTrash2 size={12} /> : "Read"}
-                </ThemeButton>
+                </button>
               </span>
             </Tooltip>
 
             <Tooltip title="Delete all notifications">
               <span>
-                <ThemeButton
-                  buttonType={isMobile ? "icon" : "default"}
-                  variant="outline"
-                  tone="danger"
-                  aria-label="Delete all notifications"
+                <button
                   onClick={handleDeleteAll}
                   disabled={(totalNotifications || 0) === 0}
-                  title="Delete all notifications"
-                  size="sm"
-                  startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
-                  sx={{
+                  style={{
+                    padding: isMobile ? "4px" : "4px 8px",
                     borderRadius: "8px",
+                    border: "1px solid var(--color-danger)",
+                    backgroundColor: "var(--color-surface)",
+                    color: "var(--color-danger)",
                     fontSize: "0.7rem",
+                    fontWeight: 600,
                     height: "24px",
-                    px: isMobile ? 0.5 : 1,
                     minWidth: isMobile ? "32px" : "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    cursor:
+                      (totalNotifications || 0) === 0
+                        ? "not-allowed"
+                        : "pointer",
+                    opacity: (totalNotifications || 0) === 0 ? 0.5 : 1,
                   }}
                 >
                   {isMobile ? <FiTrash2 size={12} /> : "All"}
-                </ThemeButton>
+                </button>
               </span>
             </Tooltip>
           </Box>
         </Box>
 
+        {/* Country Filter */}
         <Box sx={{ mt: 1 }} onClick={handleFilterInteractionStart}>
           <ThemeSelectField
             countriesFlags
@@ -572,6 +735,9 @@ export default function NotificationSidebar({
                 height: "32px",
                 fontSize: "0.8rem",
                 borderRadius: "8px",
+                backgroundColor: "var(--color-surface)",
+                color: "var(--color-text)",
+                borderColor: "var(--color-border)",
               },
             }}
             options={CountryOptions}
@@ -581,6 +747,7 @@ export default function NotificationSidebar({
           />
         </Box>
 
+        {/* Search and Filter Row */}
         <Box
           sx={{ mt: 1, display: "flex", gap: 1 }}
           onClick={handleFilterInteractionStart}
@@ -596,9 +763,15 @@ export default function NotificationSidebar({
               height: "32px",
               flex: 1,
               minWidth: 0,
+              backgroundColor: "var(--color-surface)",
+              borderColor: "var(--color-border)",
             }}
           >
-            <FiSearch className="mx-1 opacity-70" size={14} />
+            <FiSearch
+              className="mx-1 opacity-70"
+              size={14}
+              style={{ color: "var(--color-muted)" }}
+            />
             <InputBase
               placeholder="Search title, message, or ASIN…"
               inputProps={{ "aria-label": "Search notifications" }}
@@ -609,8 +782,13 @@ export default function NotificationSidebar({
               sx={{
                 flex: 1,
                 fontSize: "0.8rem",
+                color: "var(--color-text)",
                 "& input": {
                   padding: "4px 0",
+                  "&::placeholder": {
+                    color: "var(--color-muted)",
+                    opacity: 1,
+                  },
                 },
               }}
             />
@@ -622,32 +800,25 @@ export default function NotificationSidebar({
                   handleFilterInteractionEnd();
                 }}
                 aria-label="clear search"
+                style={{
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-surface)",
+                }}
               >
                 <FiX size={14} />
               </IconButton>
             )}
           </Paper>
 
-          <ThemeButton
-            buttonType="icon"
-            variant="outline"
-            tone="neutral"
-            aria-label="Filter options"
+          <CustomIconButton
             onClick={(e) => {
               handleFilterInteractionStart();
               setFiltersAnchorEl(e.currentTarget);
             }}
             title="Filter options"
-            size="sm"
-            sx={{
-              height: "32px",
-              width: "32px",
-              borderRadius: "8px",
-              flexShrink: 0,
-            }}
           >
             <FiFilter size={14} />
-          </ThemeButton>
+          </CustomIconButton>
 
           <Menu
             anchorEl={filtersAnchorEl}
@@ -665,6 +836,18 @@ export default function NotificationSidebar({
                 minWidth: 160,
                 maxWidth: isMobile ? "280px" : "none",
                 boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                backgroundColor: "var(--color-surface)",
+                color: "var(--color-text)",
+                "& .MuiMenuItem-root": {
+                  fontSize: "0.8rem",
+                  color: "var(--color-text)",
+                  "&:hover": {
+                    backgroundColor: "var(--color-primary-light)",
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "var(--color-primary-light)",
+                  },
+                },
               },
             }}
           >
@@ -673,7 +856,7 @@ export default function NotificationSidebar({
               sx={{
                 fontSize: "0.8rem",
                 fontWeight: 600,
-                color: "text.secondary",
+                color: "var(--color-muted)",
               }}
             >
               Status
@@ -703,7 +886,7 @@ export default function NotificationSidebar({
               sx={{
                 fontSize: "0.8rem",
                 fontWeight: 600,
-                color: "text.secondary",
+                color: "var(--color-muted)",
               }}
             >
               Type
@@ -733,7 +916,7 @@ export default function NotificationSidebar({
               sx={{
                 fontSize: "0.8rem",
                 fontWeight: 600,
-                color: "text.secondary",
+                color: "var(--color-muted)",
               }}
             >
               Sort
@@ -762,7 +945,7 @@ export default function NotificationSidebar({
                 handleFilterSelect("clear");
                 handleFilterInteractionEnd();
               }}
-              sx={{ fontSize: "0.8rem", color: "error.main" }}
+              sx={{ fontSize: "0.8rem", color: "var(--color-danger)" }}
             >
               <ListItemText>Clear All Filters</ListItemText>
             </MenuItem>
@@ -770,7 +953,7 @@ export default function NotificationSidebar({
         </Box>
       </div>
 
-      {/* Active filters and Date grouping section - now combined in the upper non-scrollable area */}
+      {/* Active filters and Date grouping section */}
       <Box
         sx={{
           px: 2,
@@ -782,33 +965,27 @@ export default function NotificationSidebar({
         {/* Active Filters */}
         <div className="mb-2 flex items-center justify-between">
           <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs font-medium text-gray-500 opacity-80">
+            <span
+              className="text-xs font-medium opacity-80"
+              style={{ color: "var(--color-muted)" }}
+            >
               Active:
             </span>
             {statusFilter !== "all" && (
-              <ThemeChip
-                size="sm"
+              <CustomChip
                 label={`Status: ${statusFilter}`}
-                variant="filled"
                 tone="primary"
+                variant="filled"
                 onDelete={() => {
                   setStatusFilter("all");
                   handleFilterInteractionStart();
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
-                sx={{
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  height: "22px",
-                }}
               />
             )}
             {typeFilter !== "all" && (
-              <ThemeChip
-                size="sm"
+              <CustomChip
                 label={`Type: ${typeFilter}`}
-                variant="filled"
                 tone={
                   typeFilter === "success"
                     ? "success"
@@ -816,54 +993,35 @@ export default function NotificationSidebar({
                       ? "danger"
                       : "primary"
                 }
+                variant="filled"
                 onDelete={() => {
                   setTypeFilter("all");
                   handleFilterInteractionStart();
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
-                sx={{
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  height: "22px",
-                }}
               />
             )}
             {sortOrder !== "desc" && (
-              <ThemeChip
-                size="sm"
+              <CustomChip
                 label="Oldest First"
-                variant="filled"
                 tone="neutral"
+                variant="filled"
                 onDelete={() => {
                   setSortOrder("desc");
                   handleFilterInteractionStart();
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
-                sx={{
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  height: "22px",
-                }}
               />
             )}
             {query && (
-              <ThemeChip
-                size="sm"
+              <CustomChip
                 label={`Search: ${query}`}
-                variant="filled"
                 tone="warning"
+                variant="filled"
                 onDelete={() => {
                   setQuery("");
                   handleFilterInteractionStart();
                   setTimeout(handleFilterInteractionEnd, 100);
-                }}
-                sx={{
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  height: "22px",
                 }}
               />
             )}
@@ -871,7 +1029,10 @@ export default function NotificationSidebar({
               typeFilter === "all" &&
               sortOrder === "desc" &&
               !query && (
-                <span className="text-xs italic text-gray-400">
+                <span
+                  className="text-xs italic"
+                  style={{ color: "var(--color-muted)" }}
+                >
                   No filters active
                 </span>
               )}
@@ -892,7 +1053,7 @@ export default function NotificationSidebar({
                     alignItems: "center",
                     justifyContent: "space-between",
                     py: 1,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+                    borderBottom: "1px solid var(--color-border)",
                   }}
                 >
                   <Typography
@@ -903,14 +1064,16 @@ export default function NotificationSidebar({
                       display: "inline-block",
                       borderRadius: isTodayChip ? "16px" : "4px",
                       backgroundColor: isTodayChip
-                        ? "rgba(59, 130, 246, 0.1)"
-                        : "rgba(0, 0, 0, 0.1)",
-                      color: isTodayChip ? "#1D4ED8" : "#374151",
+                        ? "var(--color-primary-light)"
+                        : "var(--color-surface-secondary)",
+                      color: isTodayChip
+                        ? "var(--color-primary)"
+                        : "var(--color-text-secondary)",
                       fontWeight: 700,
                       fontSize: "0.75rem",
                       border: isTodayChip
-                        ? "1px solid rgba(59, 130, 246, 0.3)"
-                        : "1px solid rgba(0, 0, 0, 0.15)",
+                        ? "1px solid var(--color-primary-light)"
+                        : "1px solid var(--color-border)",
                       boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                     }}
                   >
@@ -921,21 +1084,12 @@ export default function NotificationSidebar({
                       title={anyUnread ? "Mark day as read" : "All read"}
                     >
                       <span>
-                        <ThemeChip
-                          size="sm"
+                        <CustomChip
                           label="Mark day"
                           onClick={() => markDayAsRead(items)}
                           disabled={!anyUnread}
                           variant="outline"
                           tone={anyUnread ? "primary" : "neutral"}
-                          sx={{
-                            borderRadius: "6px",
-                            fontWeight: 600,
-                            fontSize: "0.7rem",
-                            height: "22px",
-                            minWidth: "auto",
-                            px: 1,
-                          }}
                         />
                       </span>
                     </Tooltip>
@@ -947,30 +1101,49 @@ export default function NotificationSidebar({
         )}
       </Box>
 
-      {/* Notification list - now only contains the actual notification items */}
+      {/* Rest of the component remains the same... */}
+      {/* Notification list */}
       <div
         className="h-[calc(100%-180px)] space-y-3 overflow-y-auto scroll-smooth p-3"
         onScroll={handleScroll}
         role="list"
         aria-label="Notification list"
+        style={{ backgroundColor: "var(--color-surface)" }}
       >
         {state.loading && !state.data.length && (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
               <Box key={i} sx={{ p: 1.5, mx: 1 }}>
-                <Skeleton variant="text" width="60%" height={18} />
-                <Skeleton variant="text" width="90%" height={14} />
-                <Skeleton variant="rectangular" height={1} />
+                <Skeleton
+                  variant="text"
+                  width="60%"
+                  height={18}
+                  sx={{ bgcolor: "var(--color-surface-secondary)" }}
+                />
+                <Skeleton
+                  variant="text"
+                  width="90%"
+                  height={14}
+                  sx={{ bgcolor: "var(--color-surface-secondary)" }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={1}
+                  sx={{ bgcolor: "var(--color-border)" }}
+                />
               </Box>
             ))}
           </div>
         )}
 
         {!state.loading && locallyFiltered.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center py-16 text-center text-gray-400">
+          <div
+            className="flex h-full flex-col items-center justify-center py-16 text-center"
+            style={{ color: "var(--color-muted)" }}
+          >
             <div className="mb-3 text-5xl">🔔</div>
             <p className="text-lg font-medium">No matches</p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
               Try clearing filters or adjusting your search.
             </p>
           </div>
@@ -1001,13 +1174,13 @@ export default function NotificationSidebar({
                         position: "relative",
                         cursor: "pointer",
                         bgcolor: isUnread
-                          ? "rgba(59,130,246,0.06)"
+                          ? "var(--color-primary-light)"
                           : "transparent",
                         borderLeft: `3px solid ${stripe}`,
                         transition: "all 0.2s ease",
                         "&:hover": {
                           transform: "translateY(-2px)",
-                          boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
+                          boxShadow: "0 6px 18px var(--color-shadow)",
                         },
                       }}
                     >
@@ -1117,7 +1290,13 @@ export default function NotificationSidebar({
                                 await markAsReadById(n?._id);
                               } catch (err) {}
                             }}
-                            sx={{ position: "absolute", top: 6, right: 22 }}
+                            sx={{
+                              position: "absolute",
+                              top: 6,
+                              right: 22,
+                              color: "var(--color-text)",
+                              backgroundColor: "var(--color-surface)",
+                            }}
                             aria-label="mark notification as read"
                           >
                             <FiCheck size={14} />
@@ -1132,10 +1311,17 @@ export default function NotificationSidebar({
 
             {(isLoadingMore || state.loading) && (
               <div className="z-100 flex justify-center py-4">
-                <CircularProgress size={24} />
+                <CircularProgress
+                  size={24}
+                  sx={{ color: "var(--color-primary)" }}
+                />
                 <Typography
                   variant="body2"
-                  sx={{ ml: 2, color: "text.secondary", fontSize: "0.8rem" }}
+                  sx={{
+                    ml: 2,
+                    color: "var(--color-muted)",
+                    fontSize: "0.8rem",
+                  }}
                 >
                   Loading more notifications...
                 </Typography>
@@ -1146,8 +1332,10 @@ export default function NotificationSidebar({
               <div className=" z-100 flex justify-center py-4">
                 <Typography
                   variant="caption"
-                  color="textSecondary"
-                  sx={{ fontSize: "0.7rem" }}
+                  sx={{
+                    fontSize: "0.7rem",
+                    color: "var(--color-muted)",
+                  }}
                 >
                   No more notifications to load
                 </Typography>
@@ -1157,7 +1345,15 @@ export default function NotificationSidebar({
         )}
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-[10px] text-[var(--color-muted)]">
+      {/* Footer */}
+      <div
+        className="sticky bottom-0 z-10 border-t px-3 py-1 text-[10px]"
+        style={{
+          borderColor: "var(--color-border)",
+          backgroundColor: "var(--color-surface)",
+          color: "var(--color-muted)",
+        }}
+      >
         <div className="flex items-center justify-between">
           <span>
             Showing <strong>{shownCount}</strong> of{" "}
