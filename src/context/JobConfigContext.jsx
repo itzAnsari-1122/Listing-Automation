@@ -148,13 +148,12 @@ export const JobConfigProvider = ({ children }) => {
       setJobConfigLoading(false);
     }
   };
-
   const updateJobConfigService = async (payload = {}) => {
     try {
       setJobConfigUpdating(true);
 
       const formattedPayload = {
-        _id: "690fde426093e34cb2cfd4a1",
+        _id: jobConfig?._id,
         checkAvailability:
           payload?.checkAvailability ?? jobConfig?.checkAvailability ?? false,
         checkViolations:
