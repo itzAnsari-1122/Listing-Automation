@@ -20,6 +20,7 @@ import AsinModal from "../../components/ui/AsinModal";
 import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
+import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
@@ -44,6 +45,10 @@ const Listing = () => {
     useState(false);
   const [showAddAsinModal, setShowAddAsinModal] = useState(false);
 
+  // Add busy state like other files
+  const [busy, setBusy] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -52,19 +57,31 @@ const Listing = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
+  // Update useEffect to handle loading states properly
   useEffect(() => {
-    const countryCodes = selectedCountries
-      .map((v) => CountryOptions.find((o) => o.value === v)?.code)
-      .filter(Boolean);
-    ListingService({
-      page,
-      limit: rowsPerPage,
-      search: debouncedSearch,
-      countryCodes: selectedCountries.map((p) => p.code),
-      status: selectedStatus === "all" ? null : selectedStatus,
-      startDate: "2020-01-01 00:00:00",
-      endDate: "2026-12-01 23:59:59",
-    });
+    const fetchListings = async () => {
+      setBusy(true);
+      setTableLoading(true);
+      try {
+        const countryCodes = selectedCountries
+          .map((v) => CountryOptions.find((o) => o.value === v)?.code)
+          .filter(Boolean);
+        await ListingService({
+          page,
+          limit: rowsPerPage,
+          search: debouncedSearch,
+          countryCodes: selectedCountries.map((p) => p.code),
+          status: selectedStatus === "all" ? null : selectedStatus,
+          startDate: "2020-01-01 00:00:00",
+          endDate: "2026-12-01 23:59:59",
+        });
+      } finally {
+        setBusy(false);
+        setTableLoading(false);
+      }
+    };
+
+    fetchListings();
   }, [page, rowsPerPage, debouncedSearch, selectedCountries, selectedStatus]);
 
   const tableData = useMemo(() => {
@@ -293,8 +310,13 @@ const Listing = () => {
         dateStyle: "medium",
       })
     : "Not Synced";
+
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Add both bar and circle ThemeLoader like other files */}
+      {busy && <ThemeLoader type="bar" />}
+      {(tableLoading || listingLoading) && <ThemeLoader type="circle" />}
+
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
@@ -520,7 +542,7 @@ const Listing = () => {
             onRowsPerPageChange={(value) => {
               setRowsPerPage(value);
             }}
-            loading={listingLoading}
+            loading={tableLoading || listingLoading} // Combine loading states like other files
           />
         </div>
       </div>

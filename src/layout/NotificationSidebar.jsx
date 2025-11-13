@@ -440,7 +440,7 @@ export default function NotificationSidebar({
                     onClick={handleMarkAllRead}
                     variant="outline"
                     textColor={totalUnread > 0 ? "#3B82F6" : "#9CA3AF"}
-                    borderRadius="9999px"
+                    borderRadius="8px"
                     size="sm"
                     disabled={totalUnread === 0}
                   >
@@ -481,6 +481,7 @@ export default function NotificationSidebar({
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 height: "24px",
+                borderRadius: "6px",
               }}
             />
             <ThemeChip
@@ -492,6 +493,7 @@ export default function NotificationSidebar({
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 height: "24px",
+                borderRadius: "6px",
               }}
             />
           </Box>
@@ -511,7 +513,7 @@ export default function NotificationSidebar({
                   size="sm"
                   startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
                   sx={{
-                    borderRadius: "9999px",
+                    borderRadius: "8px",
                     fontSize: "0.7rem",
                     height: "24px",
                     px: isMobile ? 0.5 : 1,
@@ -536,7 +538,7 @@ export default function NotificationSidebar({
                   size="sm"
                   startIcon={!isMobile ? <FiTrash2 size={12} /> : null}
                   sx={{
-                    borderRadius: "9999px",
+                    borderRadius: "8px",
                     fontSize: "0.7rem",
                     height: "24px",
                     px: isMobile ? 0.5 : 1,
@@ -565,16 +567,17 @@ export default function NotificationSidebar({
             onOpen={() => handleFilterInteractionStart()}
             onClose={() => handleFilterInteractionEnd()}
             sx={{
-              borderRadius: "40px",
+              borderRadius: "8px",
               "& .MuiInputBase-root": {
                 height: "32px",
                 fontSize: "0.8rem",
+                borderRadius: "8px",
               },
             }}
             options={CountryOptions}
             placeholder="Select countries"
             width="100%"
-            borderRadius={"30px"}
+            borderRadius={"8px"}
           />
         </Box>
 
@@ -589,7 +592,7 @@ export default function NotificationSidebar({
               py: 0.25,
               display: "flex",
               alignItems: "center",
-              borderRadius: "9999px",
+              borderRadius: "8px",
               height: "32px",
               flex: 1,
               minWidth: 0,
@@ -639,7 +642,7 @@ export default function NotificationSidebar({
             sx={{
               height: "32px",
               width: "32px",
-              borderRadius: "9999px",
+              borderRadius: "8px",
               flexShrink: 0,
             }}
           >
@@ -658,7 +661,7 @@ export default function NotificationSidebar({
             PaperProps={{
               sx: {
                 mt: 1,
-                borderRadius: "12px",
+                borderRadius: "8px",
                 minWidth: 160,
                 maxWidth: isMobile ? "280px" : "none",
                 boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
@@ -794,7 +797,7 @@ export default function NotificationSidebar({
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
                 sx={{
-                  borderRadius: "9999px",
+                  borderRadius: "6px",
                   fontWeight: 600,
                   fontSize: "0.7rem",
                   height: "22px",
@@ -819,7 +822,7 @@ export default function NotificationSidebar({
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
                 sx={{
-                  borderRadius: "9999px",
+                  borderRadius: "6px",
                   fontWeight: 600,
                   fontSize: "0.7rem",
                   height: "22px",
@@ -838,7 +841,7 @@ export default function NotificationSidebar({
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
                 sx={{
-                  borderRadius: "9999px",
+                  borderRadius: "6px",
                   fontWeight: 600,
                   fontSize: "0.7rem",
                   height: "22px",
@@ -857,7 +860,7 @@ export default function NotificationSidebar({
                   setTimeout(handleFilterInteractionEnd, 100);
                 }}
                 sx={{
-                  borderRadius: "9999px",
+                  borderRadius: "6px",
                   fontWeight: 600,
                   fontSize: "0.7rem",
                   height: "22px",
@@ -880,6 +883,7 @@ export default function NotificationSidebar({
           <div>
             {Object.entries(grouped).map(([label, items]) => {
               const anyUnread = items.some((i) => i.status === "unread");
+              const isTodayChip = label === "Today";
               return (
                 <Box
                   key={label}
@@ -897,12 +901,16 @@ export default function NotificationSidebar({
                       px: 1.5,
                       py: 0.5,
                       display: "inline-block",
-                      borderRadius: "6px",
-                      backgroundColor: "rgba(0, 0, 0, 0.1)",
-                      color: "#374151",
+                      borderRadius: isTodayChip ? "16px" : "4px",
+                      backgroundColor: isTodayChip
+                        ? "rgba(59, 130, 246, 0.1)"
+                        : "rgba(0, 0, 0, 0.1)",
+                      color: isTodayChip ? "#1D4ED8" : "#374151",
                       fontWeight: 700,
                       fontSize: "0.75rem",
-                      border: "1px solid rgba(0, 0, 0, 0.15)",
+                      border: isTodayChip
+                        ? "1px solid rgba(59, 130, 246, 0.3)"
+                        : "1px solid rgba(0, 0, 0, 0.15)",
                       boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                     }}
                   >
@@ -921,7 +929,7 @@ export default function NotificationSidebar({
                           variant="outline"
                           tone={anyUnread ? "primary" : "neutral"}
                           sx={{
-                            borderRadius: "9999px",
+                            borderRadius: "6px",
                             fontWeight: 600,
                             fontSize: "0.7rem",
                             height: "22px",
@@ -989,7 +997,7 @@ export default function NotificationSidebar({
                         p: 1.5,
                         mx: 1,
                         mb: 1.25,
-                        borderRadius: "14px",
+                        borderRadius: "8px",
                         position: "relative",
                         cursor: "pointer",
                         bgcolor: isUnread

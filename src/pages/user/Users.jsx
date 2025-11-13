@@ -58,6 +58,7 @@ export default function Users() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [busy, setBusy] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false); // Add table loading state
 
   const [editOpen, setEditOpen] = useState(false);
   const [pwdOpen, setPwdOpen] = useState(false);
@@ -77,15 +78,20 @@ export default function Users() {
     message: "",
   });
 
+  // Update the useEffect to handle loading states properly
   useEffect(() => {
-    (async () => {
+    const fetchUsers = async () => {
       setBusy(true);
+      setTableLoading(true);
       try {
         await allUsersService();
       } finally {
         setBusy(false);
+        setTableLoading(false);
       }
-    })();
+    };
+
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -231,6 +237,7 @@ export default function Users() {
 
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Add ThemeLoader like ListingReport.jsx */}
       {busy && <ThemeLoader type="bar" />}
 
       <h1
@@ -294,7 +301,7 @@ export default function Users() {
             setRowsPerPage(n);
             setPage(1);
           }}
-          loading={userLoading}
+          loading={tableLoading || userLoading} // Combine loading states like ListingReport
         />
       </MainCard>
 
