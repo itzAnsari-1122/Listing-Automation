@@ -902,19 +902,33 @@ export default function NotificationSidebar({
               const anyUnread = items.some((i) => i.status === "unread");
               return (
                 <div className="mb-20" key={label}>
-                  <div className="sticky right-[0px] top-[0px] z-0 bg-[var(--color-surface)] py-1">
-                    <div className="flex items-center justify-between px-2">
+                  <Box
+                    className="sticky right-[0px] top-[0px] z-0 py-1"
+                    sx={{
+                      backgroundColor: "rgba(0, 0, 0, 0.03)",
+                      borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+                      borderTop: "1px solid rgba(0, 0, 0, 0.08)",
+                      marginLeft: "-12px",
+                      marginRight: "-12px",
+                      paddingLeft: "12px",
+                      paddingRight: "12px",
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
                       <Typography
                         variant="caption"
                         sx={{
-                          px: 1,
-                          py: 0.25,
+                          px: 1.5,
+                          py: 0.5,
                           display: "inline-block",
-                          borderRadius: "9999px",
-                          backgroundColor: "rgba(59,130,246,0.08)",
-                          color: "#1f2937",
-                          fontWeight: 600,
-                          fontSize: "0.7rem",
+                          borderRadius: "6px",
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          color: "#374151",
+                          fontWeight: 700,
+                          fontSize: "0.75rem",
+                          border: "1px solid rgba(0, 0, 0, 0.15)",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                         }}
                       >
                         {label}
@@ -944,7 +958,7 @@ export default function NotificationSidebar({
                         </Tooltip>
                       </div>
                     </div>
-                  </div>
+                  </Box>
 
                   {items.map((n) => {
                     const isUnread = n.status === "unread";

@@ -44,8 +44,6 @@ const JobConfig = () => {
       setAvailability(config?.checkAvailability ?? false);
       setViolations(config?.checkViolations ?? false);
       setErrors(config?.sendErrorEmails ?? false);
-      setSelectedCountry(config?.marketPlaceId || "");
-      setAllCountry(config?.allCountry || "");
 
       const regionSetup = REGION_TYPES.map((regionType) => {
         const backendRegion = config?.searchRegionType?.find(
@@ -75,8 +73,6 @@ const JobConfig = () => {
     setAvailability(false);
     setViolations(true);
     setErrors(false);
-    setSelectedCountry("");
-    setAllCountry("");
 
     const defaultRegionSetup = REGION_TYPES.map((regionType) => {
       const availableMarketplaces = COUNTRIES_BY_REGION[regionType] || [];
