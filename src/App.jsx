@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { theme } from "./theme";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material";
 import { ThemeToaster } from "./components/ui/ThemeToaster";
@@ -14,6 +14,18 @@ import JobConfigProvider from "./context/JobConfigContext";
 import AppRoutes from "./routes/index";
 
 export default function App() {
+  const { getProfileService } = useAuth();
+  // ✅ INIT
+  const token = localStorage.getItem("token");
+  useEffect(() => {
+    if (token) {
+      getProfileService()
+        .catch(() => logout())
+        .finally(() => setInitializing(false));
+    } else {
+      setInitializing(false);
+    }
+  }, [token]);
   return (
     <BrowserRouter>
       <AuthProvider>
