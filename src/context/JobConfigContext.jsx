@@ -148,12 +148,12 @@ export const JobConfigProvider = ({ children }) => {
       setJobConfigLoading(false);
     }
   };
-
   const updateJobConfigService = async (payload = {}) => {
     try {
       setJobConfigUpdating(true);
 
       const formattedPayload = {
+        _id: jobConfig?._id,
         checkAvailability:
           payload?.checkAvailability ?? jobConfig?.checkAvailability ?? false,
         checkViolations:
@@ -163,7 +163,7 @@ export const JobConfigProvider = ({ children }) => {
         searchRegionType:
           payload?.searchRegionType ?? jobConfig?.searchRegionType ?? [],
       };
-
+      console.log(formattedPayload);
       const { data } = await jobConfigUpdateCallApi(formattedPayload);
       setJobConfig(data);
       themeToast?.success("✅ Job configuration updated successfully!");

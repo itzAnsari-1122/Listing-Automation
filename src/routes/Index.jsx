@@ -7,8 +7,8 @@ import ThemeLoader from "../components/ui/ThemeLoader";
 import Users from "../pages/user/Users";
 import Listing from "../pages/listing/Listing";
 import ListingReport from "../pages/listingReport/ListingReport";
+import JobConfig from "../pages/jobConfig/JobConfig";
 import ListingDetail from "../pages/listing/ListingDetail";
-import JobConfig from "../layout/JobConfig";
 
 export default function AppRoutes() {
   const { user, refreshLoading } = useAuth();
