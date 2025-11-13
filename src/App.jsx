@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { theme } from "./theme";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material";
-import AppRoutes from "./routes/Index";
 import { ThemeToaster } from "./components/ui/ThemeToaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ListingProvider } from "./context/ListingContext";
@@ -12,6 +11,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { AsinProvider } from "./context/AsinContext";
 import { RestrictedWordProvider } from "./context/RestrictedWordContext";
 import JobConfigProvider from "./context/JobConfigContext";
+import AppRoutes from "./routes/index";
 
 export default function App() {
   return (
