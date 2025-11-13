@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress, Paper } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import {
   useJobConfig,
   COUNTRIES_BY_REGION,
@@ -11,6 +11,7 @@ import ThemeChip from "../../components/ui/ThemeChip";
 import { PiUserSwitch } from "react-icons/pi";
 import { FiAlertTriangle, FiCheckCircle, FiSettings } from "react-icons/fi";
 import Tooltip from "@mui/material/Tooltip";
+import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const JobConfig = () => {
   const {
@@ -26,12 +27,16 @@ const JobConfig = () => {
   const [errors, setErrors] = useState(false);
   const [regionData, setRegionData] = useState([]);
   const [apiError, setApiError] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
     loadJobConfig();
   }, []);
 
   const loadJobConfig = async () => {
+    setBusy(true);
+    setModalLoading(true);
     try {
       setApiError(null);
       const config = await getJobConfigService();
@@ -66,6 +71,9 @@ const JobConfig = () => {
     } catch (error) {
       setApiError(error.message || "Failed to load configuration");
       initializeWithDefaults();
+    } finally {
+      setBusy(false);
+      setModalLoading(false);
     }
   };
 
@@ -89,6 +97,7 @@ const JobConfig = () => {
   };
 
   const handleSwitchChange = async (key, value) => {
+    setModalLoading(true);
     try {
       const updatedStates = {
         checkAvailability: key === "availability" ? value : availability,
@@ -101,7 +110,9 @@ const JobConfig = () => {
       if (key === "errors") setErrors(value);
 
       await updateJobConfigService(updatedStates);
-    } catch {}
+    } finally {
+      setModalLoading(false);
+    }
   };
 
   const handleRegionChange = (index, field, value) => {
@@ -109,7 +120,6 @@ const JobConfig = () => {
       prev.map((item, i) => {
         if (i === index) {
           const updatedItem = { ...item, [field]: value };
-          // Update active status based on selected marketplaces
           if (field === "selectedMarketplaces") {
             updatedItem.active = updatedItem.selectedMarketplaces.length > 0;
           }
@@ -125,6 +135,7 @@ const JobConfig = () => {
   };
 
   const handleSubmit = async () => {
+    setModalLoading(true);
     try {
       const formattedSearchRegionType = regionData
         .filter((r) => r.selectedMarketplaces.length > 0)
@@ -136,13 +147,15 @@ const JobConfig = () => {
       if (formattedSearchRegionType.length === 0) {
         return;
       }
-      console.log(formattedSearchRegionType);
+
       await updateJobConfigService({
         searchRegionType: formattedSearchRegionType,
       });
 
       setTimeout(() => loadJobConfig(), 1000);
-    } catch {}
+    } finally {
+      setModalLoading(false);
+    }
   };
 
   const getActiveRegionsCount = () =>
@@ -213,11 +226,12 @@ const JobConfig = () => {
     );
   };
 
+  // Show ThemeLoader when initially loading - exactly like Listing.jsx
   if (jobConfigLoading && !jobConfig && !apiError) {
     return (
       <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-96 flex-col items-center justify-center gap-4">
-          <CircularProgress size={40} sx={{ color: "var(--color-primary)" }} />
+          <ThemeLoader type="circle" />
           <Typography variant="h6" style={{ color: "var(--color-text)" }}>
             Loading Job Configuration...
           </Typography>
@@ -228,6 +242,12 @@ const JobConfig = () => {
 
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Bar loader for general busy state - exactly like Listing.jsx */}
+      {busy && <ThemeLoader type="bar" />}
+
+      {/* Circle loader for operations - exactly like Listing.jsx */}
+      {modalLoading && <ThemeLoader type="circle" />}
+
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
@@ -237,14 +257,11 @@ const JobConfig = () => {
           Job Configuration
         </h1>
 
-        {jobConfigUpdating && (
+        {(jobConfigUpdating || modalLoading) && (
           <div className="flex items-center gap-2">
-            <CircularProgress
-              size={20}
-              sx={{ color: "var(--color-primary)" }}
-            />
+            <ThemeLoader type="circle" size={20} />
             <span style={{ color: "var(--color-text-muted)" }}>
-              Updating...
+              {jobConfigUpdating ? "Updating..." : "Loading..."}
             </span>
           </div>
         )}
@@ -277,6 +294,7 @@ const JobConfig = () => {
               tone="danger"
               variant="outlined"
               onClick={loadJobConfig}
+              disabled={modalLoading}
             >
               RETRY
             </ThemeButton>
@@ -356,7 +374,7 @@ const JobConfig = () => {
         </div>
       </div>
 
-      {/* Feature Toggles Card - UPDATED SWITCHES */}
+      {/* Feature Toggles Card */}
       <Paper
         elevation={1}
         sx={{
@@ -431,7 +449,7 @@ const JobConfig = () => {
               <CustomSwitch
                 checked={sw.value}
                 onChange={(value) => handleSwitchChange(sw.key, value)}
-                disabled={jobConfigUpdating}
+                disabled={jobConfigUpdating || modalLoading}
                 color={sw.color}
               />
             </Box>
@@ -439,7 +457,7 @@ const JobConfig = () => {
         </Box>
       </Paper>
 
-      {/* Region Configuration Card - UPDATED WITHOUT CHECKBOXES */}
+      {/* Region Configuration Card */}
       <Paper
         elevation={1}
         sx={{
@@ -539,16 +557,18 @@ const JobConfig = () => {
               >
                 <Box sx={{ width: "100%", maxWidth: "400px" }}>
                   <ThemeSelectField
-                    countriesFlags
+                    countriesFlags // Add this prop to show flags
                     placeholder="Select marketplace region IDs"
                     value={region.selectedMarketplaces}
                     onChange={(value) => handleMarketplaceSelect(index, value)}
                     options={region.marketplaces.map((m) => ({
                       label: `${m.label} (${m.code})`,
                       value: m.value,
+                      code: m.code, // Make sure code is passed for flags
                     }))}
                     fullWidth
                     multiple
+                    disabled={modalLoading}
                   />
                 </Box>
               </Box>
@@ -591,19 +611,21 @@ const JobConfig = () => {
                 onClick={handleSubmit}
                 disabled={
                   jobConfigUpdating ||
+                  modalLoading ||
                   !regionData.some((r) => r.selectedMarketplaces.length > 0)
                 }
                 tone="primary"
                 variant="contained"
                 size="md"
               >
-                {jobConfigUpdating ? (
+                {jobConfigUpdating || modalLoading ? (
                   <>
-                    <CircularProgress
+                    <ThemeLoader
+                      type="circle"
                       size={16}
-                      sx={{ color: "var(--color-primary-contrast)", mr: 1 }}
+                      style={{ marginRight: "8px" }}
                     />
-                    Submitting...
+                    {jobConfigUpdating ? "Submitting..." : "Loading..."}
                   </>
                 ) : (
                   "Submit"

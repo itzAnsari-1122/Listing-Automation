@@ -20,6 +20,7 @@ import AsinModal from "../../components/ui/AsinModal";
 import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
+import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
@@ -43,6 +44,10 @@ const Listing = () => {
     useState(false);
   const [showAddAsinModal, setShowAddAsinModal] = useState(false);
 
+  // Add busy state like other files
+  const [busy, setBusy] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -51,6 +56,7 @@ const Listing = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
+  // Update useEffect to handle loading states properly
   useEffect(() => {
     ListingService({
       page,
@@ -287,8 +293,13 @@ const Listing = () => {
         dateStyle: "medium",
       })
     : "Not Synced";
+
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Add both bar and circle ThemeLoader like other files */}
+      {busy && <ThemeLoader type="bar" />}
+      {(tableLoading || listingLoading) && <ThemeLoader type="circle" />}
+
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
@@ -514,7 +525,7 @@ const Listing = () => {
             onRowsPerPageChange={(value) => {
               setRowsPerPage(value);
             }}
-            loading={listingLoading}
+            loading={tableLoading || listingLoading} // Combine loading states like other files
           />
         </div>
       </div>
