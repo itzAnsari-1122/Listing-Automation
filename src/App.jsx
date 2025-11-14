@@ -16,24 +16,24 @@ import AppRoutes from "./routes/index";
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ListingProvider>
-          <NotificationProvider>
-            <AsinProvider>
-              <RestrictedWordProvider>
-                <JobConfigProvider>
-                  <ThemeToaster />
-                  <ThemeProvider>
-                    <MuiThemeProvider theme={theme}>
+      <ThemeProvider>
+        <MuiThemeProvider theme={theme}>
+          <AuthProvider>
+            <ListingProvider>
+              <NotificationProvider>
+                <AsinProvider>
+                  <RestrictedWordProvider>
+                    <JobConfigProvider>
+                      <ThemeToaster />
                       <AppRoutes />
-                    </MuiThemeProvider>
-                  </ThemeProvider>
-                </JobConfigProvider>
-              </RestrictedWordProvider>
-            </AsinProvider>
-          </NotificationProvider>
-        </ListingProvider>
-      </AuthProvider>
+                    </JobConfigProvider>
+                  </RestrictedWordProvider>
+                </AsinProvider>
+              </NotificationProvider>
+            </ListingProvider>
+          </AuthProvider>
+        </MuiThemeProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
