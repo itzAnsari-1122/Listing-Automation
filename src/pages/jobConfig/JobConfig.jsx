@@ -3,7 +3,6 @@ import { Box, Typography, Paper } from "@mui/material";
 import {
   useJobConfig,
   COUNTRIES_BY_REGION,
-  REGION_TYPES,
 } from "../../context/JobConfigContext";
 import ThemeSelectField from "../../components/ui/ThemeSelectField";
 import ThemeButton from "../../components/ui/ThemeButton";
@@ -12,6 +11,7 @@ import { PiUserSwitch } from "react-icons/pi";
 import { FiAlertTriangle, FiCheckCircle, FiSettings } from "react-icons/fi";
 import Tooltip from "@mui/material/Tooltip";
 import ThemeLoader from "../../components/ui/ThemeLoader";
+import { REGION_TYPES } from "../../utils";
 
 const JobConfig = () => {
   const {
@@ -246,7 +246,6 @@ const JobConfig = () => {
       {busy && <ThemeLoader type="bar" />}
 
       {/* Circle loader for operations - exactly like Listing.jsx */}
-      {modalLoading && <ThemeLoader type="circle" />}
 
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
@@ -266,41 +265,6 @@ const JobConfig = () => {
           </div>
         )}
       </div>
-
-      {apiError && (
-        <div
-          className="mb-6 rounded-lg p-4"
-          style={{
-            backgroundColor: "var(--color-danger-200)",
-            border: "1px solid var(--color-danger-200)",
-            color: "var(--color-text)",
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <Typography variant="h6" style={{ color: "var(--color-text)" }}>
-                <FiAlertTriangle className="mr-2 inline" />
-                API Connection Error
-              </Typography>
-              <Typography
-                variant="body2"
-                style={{ color: "var(--color-text-muted)", marginTop: 4 }}
-              >
-                {apiError}
-              </Typography>
-            </div>
-            <ThemeButton
-              size="sm"
-              tone="danger"
-              variant="outlined"
-              onClick={loadJobConfig}
-              disabled={modalLoading}
-            >
-              RETRY
-            </ThemeButton>
-          </div>
-        </div>
-      )}
 
       {/* Stats Cards */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">

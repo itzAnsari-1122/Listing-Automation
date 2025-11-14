@@ -20,6 +20,7 @@ import AsinModal from "../../components/ui/AsinModal";
 import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
+import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
@@ -35,7 +36,6 @@ const Listing = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [syncing, setSyncing] = useState(false);
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -295,6 +295,7 @@ const Listing = () => {
     : "Not Synced";
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {listingLoading && <ThemeLoader type="bar" />}
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
