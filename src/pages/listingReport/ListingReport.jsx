@@ -6,6 +6,7 @@ import { Tooltip, Chip } from "@mui/material";
 import ThemeButton from "../../components/ui/ThemeButton";
 import { useNavigate } from "react-router-dom";
 import ThemeChip from "../../components/ui/ThemeChip";
+import ThemeLoader from "../../components/ui/ThemeLoader"; // Add this import
 
 function ListingReport() {
   const { ListingFlaggedService, listingFlaggedLoading, listingFlagged } =
@@ -18,13 +19,24 @@ function ListingReport() {
     totalItems: 0,
   });
 
+  const [busy, setBusy] = useState(false); // Add busy state like Users.jsx
+
   useEffect(() => {
-    const payload = {
-      page: pagination.currentPage,
-      limit: pagination.pageSize,
-      search: "",
+    const fetchData = async () => {
+      setBusy(true);
+      try {
+        const payload = {
+          page: pagination.currentPage,
+          limit: pagination.pageSize,
+          search: "",
+        };
+        await ListingFlaggedService(payload);
+      } finally {
+        setBusy(false);
+      }
     };
-    ListingFlaggedService(payload);
+
+    fetchData();
   }, [pagination.currentPage, pagination.pageSize]);
 
   useEffect(() => {
@@ -242,6 +254,9 @@ function ListingReport() {
 
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Add ThemeLoader like in Users.jsx */}
+      {busy && <ThemeLoader type="bar" />}
+
       <div className="mx-auto max-w-7xl">
         <h1
           className="mb-6 flex items-center gap-6 text-3xl font-bold"
@@ -270,7 +285,7 @@ function ListingReport() {
             }
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            loading={listingFlaggedLoading}
+            loading={listingFlaggedLoading || busy} // Combine both loading states
           />
         </div>
       </div>

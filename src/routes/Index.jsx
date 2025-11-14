@@ -32,7 +32,7 @@ export default function AppRoutes() {
             path="/listing-report"
             element={
               <MainLayout>
-                <ComingSoon />
+                <ListingReport />
               </MainLayout>
             }
           />
@@ -40,7 +40,7 @@ export default function AppRoutes() {
             path="/listing/:asin"
             element={
               <MainLayout>
-                <ComingSoon />
+                <ListingDetail />
               </MainLayout>
             }
           />
@@ -48,23 +48,23 @@ export default function AppRoutes() {
             path="/listing"
             element={
               <MainLayout>
-                <ComingSoon />
+                <Listing />
               </MainLayout>
             }
           />
           <Route
-            path="/profile"
+            path="/users"
             element={
               <MainLayout>
-                <ComingSoon />
+                <Users />
               </MainLayout>
             }
           />{" "}
           <Route
-            path="/users"
+            path="/job-config"
             element={
               <MainLayout>
-                <ComingSoon />
+                <JobConfig />
               </MainLayout>
             }
           />
