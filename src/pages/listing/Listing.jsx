@@ -20,7 +20,6 @@ import AsinModal from "../../components/ui/AsinModal";
 import RestrictedWordsModal from "../../components/ui/RestrictedWordModal";
 import AddRestrictedWordModal from "../../components/ui/AddRestrictedWordModal";
 import { Box } from "@mui/material";
-import ThemeLoader from "../../components/ui/ThemeLoader";
 
 const Listing = () => {
   const {
@@ -36,6 +35,7 @@ const Listing = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [syncing, setSyncing] = useState(false);
   const navigate = useNavigate();
 
   const [showAsinModal, setShowAsinModal] = useState(false);
@@ -43,10 +43,6 @@ const Listing = () => {
   const [showAddRestrictedModal, setShowAddRestrictedWordModal] =
     useState(false);
   const [showAddAsinModal, setShowAddAsinModal] = useState(false);
-
-  // Add busy state like other files
-  const [busy, setBusy] = useState(false);
-  const [tableLoading, setTableLoading] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -56,31 +52,19 @@ const Listing = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  // Update useEffect to handle loading states properly
   useEffect(() => {
-    const fetchListings = async () => {
-      setBusy(true);
-      setTableLoading(true);
-      try {
-        const countryCodes = selectedCountries
-          .map((v) => CountryOptions.find((o) => o.value === v)?.code)
-          .filter(Boolean);
-        await ListingService({
-          page,
-          limit: rowsPerPage,
-          search: debouncedSearch,
-          countryCodes: selectedCountries.map((p) => p.code),
-          status: selectedStatus === "all" ? null : selectedStatus,
-          startDate: "2020-01-01 00:00:00",
-          endDate: "2026-12-01 23:59:59",
-        });
-      } finally {
-        setBusy(false);
-        setTableLoading(false);
-      }
-    };
-
-    fetchListings();
+    const countryCodes = selectedCountries
+      .map((v) => CountryOptions.find((o) => o.value === v)?.code)
+      .filter(Boolean);
+    ListingService({
+      page,
+      limit: rowsPerPage,
+      search: debouncedSearch,
+      countryCodes: selectedCountries.map((p) => p.code),
+      status: selectedStatus === "all" ? null : selectedStatus,
+      startDate: "2020-01-01 00:00:00",
+      endDate: "2026-12-01 23:59:59",
+    });
   }, [page, rowsPerPage, debouncedSearch, selectedCountries, selectedStatus]);
 
   const tableData = useMemo(() => {
@@ -157,6 +141,7 @@ const Listing = () => {
         marketplaceCode: item.marketplaceCode || summary.marketplaceId || "N/A",
         marketplaceName:
           item.marketplaceName || summary.websiteDisplayGroupName || "N/A",
+
         image,
         title,
         brand,
@@ -167,6 +152,7 @@ const Listing = () => {
         createdAt: item.createdAt || item.storedAt || null,
         updatedAt: item.updatedAt || null,
         storedAt: item.storedAt || null,
+
         upc,
         ean,
         identifiers,
@@ -307,13 +293,8 @@ const Listing = () => {
         dateStyle: "medium",
       })
     : "Not Synced";
-
   return (
     <div className="mx-auto mb-12 mt-8 min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
-      {/* Add both bar and circle ThemeLoader like other files */}
-      {busy && <ThemeLoader type="bar" />}
-      {(tableLoading || listingLoading) && <ThemeLoader type="circle" />}
-
       <div className="mb-6 flex items-center justify-between pt-4">
         <h1
           className="flex items-center gap-4 text-3xl font-bold"
@@ -400,60 +381,73 @@ const Listing = () => {
           className="flex items-center justify-between rounded-lg p-5 shadow-sm transition hover:shadow-md"
           style={{ backgroundColor: "var(--color-surface)" }}
         >
-          <div className="flex items-center gap-4">
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-lg"
-              style={{ backgroundColor: "rgba(217,119,6,0.15)" }}
-            >
-              <FiClock size={22} style={{ color: "var(--color-warning)" }} />
+          {listingSyncLoading ? (
+            // Loading state - centered spinner
+            <div className="flex w-full items-center justify-center">
+              <FiRefreshCw
+                size={24}
+                className="animate-spin"
+                style={{
+                  color: "var(--color-info)",
+                  transition: "color 0.3s ease",
+                }}
+              />
             </div>
-            <div>
-              <p className="text-sm text-gray-400">Last Sync</p>
-              <h2
-                className="text-lg font-semibold"
-                style={{ color: "var(--color-text)" }}
-              >
-                {formattedDate}
-              </h2>
-            </div>
-          </div>
+          ) : (
+            // Normal state
+            <>
+              <div className="flex items-center gap-4">
+                <div
+                  className="flex h-12 w-12 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: "rgba(217,119,6,0.15)" }}
+                >
+                  <FiClock
+                    size={22}
+                    style={{ color: "var(--color-warning)" }}
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Last Sync</p>
+                  <h2
+                    className="text-lg font-semibold"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    {formattedDate}
+                  </h2>
+                </div>
+              </div>
 
-          <ThemeButton
-            onClick={() => ListingSyncService()}
-            buttonType="icon"
-            disabled={listingSyncLoading}
-            aria-label="Sync Listings"
-            sx={{
-              backgroundColor: "var(--color-surface)",
-              color: "var(--color-primary)",
-              border: "1px solid var(--color-border)",
-              transition: "all 0.25s ease-in-out",
-              "&:hover": {
-                backgroundColor:
-                  "color-mix(in oklab, var(--color-primary) 8%, transparent)",
-                transform: "rotate(5deg) scale(1.05)",
-              },
-              "&:active": { transform: "scale(0.95)" },
-            }}
-          >
-            <Tooltip
-              title={listingSyncLoading ? "Syncing..." : "Sync now"}
-              placement="bottom"
-            >
-              <span>
-                <FiRefreshCw
-                  size={18}
-                  className={listingSyncLoading ? "animate-spin" : ""}
-                  style={{
-                    color: listingSyncLoading
-                      ? "var(--color-info)"
-                      : "var(--color-primary)",
-                    transition: "color 0.3s ease",
-                  }}
-                />
-              </span>
-            </Tooltip>
-          </ThemeButton>
+              <ThemeButton
+                onClick={() => ListingSyncService()}
+                buttonType="icon"
+                aria-label="Sync Listings"
+                sx={{
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-primary)",
+                  border: "1px solid var(--color-border)",
+                  transition: "all 0.25s ease-in-out",
+                  "&:hover": {
+                    backgroundColor:
+                      "color-mix(in oklab, var(--color-primary) 8%, transparent)",
+                    transform: "rotate(5deg) scale(1.05)",
+                  },
+                  "&:active": { transform: "scale(0.95)" },
+                }}
+              >
+                <Tooltip title="Sync now" placement="bottom">
+                  <span>
+                    <FiRefreshCw
+                      size={18}
+                      style={{
+                        color: "var(--color-primary)",
+                        transition: "color 0.3s ease",
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              </ThemeButton>
+            </>
+          )}
         </div>
       </div>
 
@@ -539,7 +533,7 @@ const Listing = () => {
             onRowsPerPageChange={(value) => {
               setRowsPerPage(value);
             }}
-            loading={tableLoading || listingLoading} // Combine loading states like other files
+            loading={listingLoading}
           />
         </div>
       </div>
