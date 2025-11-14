@@ -1053,7 +1053,6 @@ export default function NotificationSidebar({
                     alignItems: "center",
                     justifyContent: "space-between",
                     py: 1,
-                    borderBottom: "1px solid var(--color-border)",
                   }}
                 >
                   <Typography
